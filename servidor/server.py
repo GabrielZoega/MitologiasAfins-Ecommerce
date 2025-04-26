@@ -1,4 +1,6 @@
 import socket
+import sqlite3
+
 
 HOST = "0.0.0.0"  
 PORT = 6600      
@@ -18,7 +20,22 @@ def main():
         if not nome:
             break
         
-        resposta = f"roi {nome}, né?"
+        # Criando o arquivo do database para testes
+        con = sqlite3.connect('/data/maSql.db')
+        # Roda o arquivo init com as tabelas a serem criadas
+        with open('/data/init.sql') as f:
+            con.executescript(f.read())
+        con.commit()
+        
+        #cursos para acessar o banco
+        cur = con.cursor()
+        
+        cur.execute('SELECT nome FROM usuario WHERE id = 1')
+        # é necessário usar o fetch para recuperar as informações (fetchone() pega o primeiro da pilha)
+        teste = cur.fetchone()
+        
+        # Aqui deve coloquei pra responder o nome do banco só pra testar
+        resposta = f"roi {teste[0]}, né?"
         conn.sendall(resposta.encode())
 
         conn.close()

@@ -15,4 +15,8 @@ services:
     container_name: servidor-app
     ports:
       - "6600:6600"
-    network_mode: host 
+    network_mode: host
+    volumes:
+      - ./database:/data
+    environment:
+      - DATABASE_URL=/data/maSql.db

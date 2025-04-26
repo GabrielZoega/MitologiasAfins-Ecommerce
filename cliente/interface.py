@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdi
 from client import enviar_nome  
 
 class Interface(QWidget):
+    
     def __init__(self):
         super().__init__()
 
@@ -31,6 +32,7 @@ class Interface(QWidget):
         if nome:
             resposta = enviar_nome(nome)
             self.resposta_label.setText(resposta)
+            
 
 app = QApplication(sys.argv)
 janela = Interface()
