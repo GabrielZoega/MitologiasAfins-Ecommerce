@@ -1,0 +1,22 @@
+services:
+  client:
+    build: ./cliente
+    container_name: cliente-app
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./cliente:/app  
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    network_mode: host  
+
+  server:
+    build: ./servidor
+    container_name: servidor-app
+    ports:
+      - "6600:6600"
+    network_mode: host
+    volumes:
+      - ./database:/data
+    environment:
+      - DATABASE_URL=/data/maSql.db
