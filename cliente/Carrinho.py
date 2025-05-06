@@ -8,9 +8,9 @@ class Carrinho():
         self.itens.append(item)
         item.quantidadeCarrinho = 1
         
-    def removerItem (self, item):
+    def removerItem (self, nomeItem):
         for i in self.itens:
-            if i == item: # comparar nomes
+            if i.nome == nomeItem:
                 self.itens.remove(i)
                 print(f"Item '{i}' removido do carrinho.")
                 return
@@ -27,18 +27,24 @@ class Carrinho():
         for item in self.itens:
             self.total += item.precoItem * item.quantidadeCarrinho
 
- ##   def aumentarQuantidadeItens(self, item): #Essa função serve para poder aumentar a quantidade de um certo item no carrinho
-   ##     for i in self.itens: # verificar como fazer esse for melhor
-     #       if i == item:
-      #         return
-       # print(f"Item '{i}' não encontrado no carrinho.")
+    def aumentarQuantidadeItens(self, nomeItem): #Essa função serve para poder aumentar a quantidade de um certo item no carrinho
+        for i in self.itens: # verificar como fazer esse for melhor
+            if i.nome == nomeItem:
+                i.quantidadeCarrinho = i.quantidadeCarrinho + 1
+                return
+            else:
+                print(f"Item '{i}' não encontrado no carrinho.")
 
-#def diminuirQuantidadeItens(self, item): #Essa função serve para poder aumentar a quantidade de um certo item no carrinho
- #       for i in self.itens:
-  #          if i == item:
-   #             self.itens.remove(i)
-    #            print(f"Item '{i}' removido do carrinho.")
-     #           return
-      #  print(f"Item '{i}' não encontrado no carrinho.")
+    def diminuirQuantidadeItens(self, nomeItem): #Essa função serve para poder aumentar a quantidade de um certo item no carrinho
+       for i in self.itens:
+            if i.nome == nomeItem:
+               if i.quantidadeCarrinho == 1:
+                   self.removerItem(nomeItem)
+                   return
+               else: 
+                   i.quantidadeCarrinho = i.quantidadeCarrinho - 1
+                   return
+            else:
+                print(f"Item '{i}' não encontrado no carrinho.")
 
                 
