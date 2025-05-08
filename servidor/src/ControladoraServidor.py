@@ -174,7 +174,153 @@ class ControladoraServidor:
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
-                
+            
+            case "alterarNomeLoja":
+                nomeLoja = parametros.get("nome")
+                if nomeLoja:
+                      self.alterarNomeLoja(nomeLoja)
+                      return{
+                          "status": "ok",
+                          "resposta": "Nome da loja alterado com sucesso"
+                      }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+                    
+            case "alterarEndereco":
+                endereco = parametros.get("endereco")
+                if endereco:
+                    self.alterarEndereco(endereco)
+                    return{
+                        "status": "ok",
+                        "resposta": "Endereço da loja alterado com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+            
+            case "alterarDescricaoLoja":
+                descricaoLoja = parametros.get("descricao")
+                if descricaoLoja:
+                    self.alterarDescricaoLoja(descricao)
+                    return{
+                        "status": "ok",
+                        "resposta": "Descrição da Loja alterada com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+            
+            case "alterarCategoria":
+                idAnuncio = parametros.get("idAnuncio")
+                categoria = parametros.get("categoria")
+                if idAnuncio and categoria:
+                    self.alterarCategoria(idAnuncio, categoria)
+                    return{
+                        "status": "ok",
+                        "resposta": "Categoria alterada com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }  
+            
+            case "alterarStatus":
+                idAnuncio = parametros.get("idAnuncio")
+                status = parametros.get("status")
+                if idAnuncio and status:
+                    self.alterarStatus(idAnuncio, status)
+                    return{
+                        "status": "ok",
+                        "resposta": "Status alterado com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }  
+            
+            case "alterarProduto":
+                idAnuncio = parametros.get("idAnuncio")
+                idProduto = parametros.get("idProduto")
+                if idAnuncio and idProduto:
+                    self.alterarProduto(idAnuncio, idProduto)
+                    return{
+                        "status": "ok",
+                        "resposta": "Produto alterado com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+            
+            case "alterarNomeProduto":
+                idProduto = parametros.get("idProduto")
+                nomeProduto = parametros.get("nome")
+                if idProduto and nomeProduto:
+                    self.alterarNomeProduto(idProduto, nomeProduto)
+                    return{
+                        "status": "ok",
+                        "resposta": "O nome do produto foi alterado com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+            
+            case "alterarDescricaoProduto":
+                idProduto = parametros.get("idProduto")
+                descricaoProduto = parametros.get("descricao")
+                if idProduto and descricaoProduto:
+                    self.alterarDescricaoProduto(idProduto, descricaoProduto)
+                    return{
+                        "status": "ok",
+                        "resposta": "Descrição do produto alterada com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+            
+            case "alterarPreco":
+                idProduto = parametros.get("idProduto")
+                preco = parametros.get("preco")
+                if idProduto and preco:
+                    self.alterarPreco(idProduto, preco)
+                    return{
+                        "status": "ok",
+                        "resposta": "Preco do produto alterado com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+            
+            case "alterarEstoque":
+                idProduto = parametros.get("idProduto")
+                estoque = parametros.get("estoque")
+                if idProduto and estoque:
+                    self.alterarEstoque(idProduto, estoque)
+                    return{
+                        "status": "ok",
+                        "resposta": "Estoque alterado com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
             
             case _:
                 return {"status": "erro", "resposta": "Comando desconhecido"}
@@ -211,8 +357,66 @@ class ControladoraServidor:
             return 200
         else:
             return 403
+    
+    
+    # Operações de Edição da Loja:
+    def alterarNomeLoja(self, nome: str):
+        self.loja.nome = nome
+        self.loja.alterarNomeLoja(nome, self.banco)
+    
+    def alterarEndereco(self, endereco: str):
+        self.loja.endereco = endereco
+        self.loja.alterarEndereco(endereco, self.banco)
+    
+    def alterarDescricaoLoja(self, descricao: str):
+        self.loja.descricao = descricao
+        self.loja.alterarDescricaoLoja(descricao, self.banco)
+    
+    
+    # Operações de Edição do Anuncio
+    def alterarCategoria(self, idAnuncio: int, categoria: Categoria):
+        for anuncio in self.loja.anuncios:
+            if anuncio.idAnuncio == idAnuncio:
+                anuncio.categoria = categoria
+                anuncio.alterarCategoria(categoria, self.banco)
         
-    # Operações de Edição:
+    def alterarStatus(self, idAnuncio: int, status: Status):
+        for anuncio in self.loja.anuncios:
+            if anuncio.idAnuncio == idAnuncio:
+                anuncio.status = status
+                anuncio.alterarStatus(status, self.banco)
+    
+    def alterarProduto(self, idAnuncio: int, idProduto: int):
+        for anuncio in self.loja.anuncios:
+            if anuncio.idAnuncio == idAnuncio:
+                anuncio.idProduto = idProduto
+                anuncio.alterarProduto(idProduto, self.banco)
+
+
+    # Operações de Edição do Produto
+    def alterarNomeProduto(self, idProduto: int, nome: str):
+        for produto in self.loja.produtos:
+            if produto.idProduto == idProduto:
+                produto.nome = nome
+                produto.alterarProduto(nome, self.banco)
+            
+    def alterarDescricaoProduto(self, idProduto: int, descricao: str):
+        for produto in self.loja.produtos:
+            if produto.idProduto == idProduto:
+                produto.descricao = descricao
+                produto.alterarProduto(descricao, self.banco)
+                
+    def alterarPreco(self, idProduto: int, preco: float):
+        for produto in self.loja.produtos:
+            if produto.idProduto == idProduto:
+                produto.preco = preco
+                produto.alterarProduto(preco, self.banco)
+                
+    def alterarEstoque(self, idProduto: int, estoque: int):
+        for produto in self.loja.produtos:
+            if produto.idProduto == idProduto:
+                produto.estoque = estoque
+                produto.alterarProduto(estoque, self.banco)
     
     
     # Operações de Exclusão:

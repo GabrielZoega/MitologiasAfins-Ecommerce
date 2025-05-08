@@ -27,3 +27,15 @@ class Anuncio:
     def excluirAnuncio(self, banco: AcessoBanco):
         banco.cur.execute("DELETE FROM anuncio WHERE idAnuncio = ?", (self.idAnuncio,))
         banco.con.commit()
+    
+    def alterarCategoria(self, categoria: Categoria, banco: AcessoBanco):
+        banco.cur.execute("UPDATE anuncio SET categoria = ? WHERE idAnuncio = ?", (categoria, self.idAnuncio))
+        banco.con.commit()
+        
+    def alterarStatus(self, status: Status, banco: AcessoBanco):
+        banco.cur.execute("UPDATE anuncio SET status = ? WHERE idAnuncio = ?", (status, self.idAnuncio))
+        banco.con.commit()
+        
+    def alterarProduto(self, idProduto: int, banco: AcessoBanco):
+        banco.cur.execute("UPDATE anuncio SET Fk_idProduto = ? WHERE idAnuncio = ?", (idProduto, self.idAnuncio))
+        banco.con.commit()

@@ -36,6 +36,23 @@ class Loja:
     def adicionaProduto(self, produto: Produto):
         self.produtos.append(produto)
     
+    # Exclui a loja do banco
     def excluirLoja(self, banco: AcessoBanco):
         banco.cur.execute("DELETE FROM loja WHERE idLoja = ?", (self.idLoja,))
         banco.con.commit()
+    
+    # Altere o nome da loja no banco
+    def alterarNomeLoja(self, nome: str, banco: AcessoBanco):
+        banco.cur.execute("UPDATE loja SET nomeLoja = ? WHERE idLoja = ?", (nome, self.idLoja))
+        banco.con.commit()
+    
+    # Altere o endereco da loja no banco
+    def alterarEndereco(self, endereco: str, banco: AcessoBanco):
+        banco.cur.execute("UPDATE loja SET endereco = ? WHERE idLoja = ?", (endereco, self.idLoja))
+        banco.con.commit()
+        
+    # Altere a descricao da loja no banco
+    def alterarDescricaoLoja(self, descricao: str, banco: AcessoBanco):
+        banco.cur.execute("UPDATE loja SET descricaoLoja = ? WHERE idLoja = ?", (descricao, self.idLoja))
+        banco.con.commit()
+    
