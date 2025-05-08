@@ -35,3 +35,7 @@ class Loja:
     # Adiciona um produto na lista de produtos da loja
     def adicionaProduto(self, produto: Produto):
         self.produtos.append(produto)
+    
+    def excluirLoja(self, banco: AcessoBanco):
+        banco.cur.execute("DELETE FROM loja WHERE idLoja = ?", (self.idLoja,))
+        banco.con.commit()

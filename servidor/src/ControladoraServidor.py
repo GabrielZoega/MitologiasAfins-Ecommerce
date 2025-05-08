@@ -43,58 +43,167 @@ class ControladoraServidor:
     
     # identifica e executa o comando passado (adicionar mais comandos)
     def comandos(self, payload):
-        cmd = payload.get("comando")
+        comando = payload.get("comando")
         parametros = payload.get("parametros", {})
         
-        print(f"[{self.addr}] -> Comando: {cmd} | Parametros: {parametros}")
+        print(f"[{self.addr}] -> Comando: {comando} | Parametros: {parametros}")
         
-        if cmd == "criarLoja":
-            nomeLoja = parametros.get("nome")
-            descricaoLoja = parametros.get("descricao")
-            endereco = parametros.get("endereco")
-            idUsuario = parametros.get("idUsuario")
-            if nomeLoja and descricaoLoja and endereco and idUsuario:
-                self.criarLoja(nomeLoja, endereco, descricaoLoja, idUsuario)
-                return {
+        match comando:
+            case "criarLoja":
+                nomeLoja = parametros.get("nome")
+                descricaoLoja = parametros.get("descricao")
+                endereco = parametros.get("endereco")
+                idUsuario = parametros.get("idUsuario")
+                if nomeLoja and descricaoLoja and endereco and idUsuario:
+                    self.criarLoja(nomeLoja, endereco, descricaoLoja, idUsuario)
+                    return {
+                        "status": "ok",
+                        "resposta": "Loja criada com sucesso"
+                    }
+                else:
+                    return {
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+
+            case "criarAnuncio":
+                categoria = parametros.get("categoria")
+                status = parametros.get("status")
+                idLoja = self.loja.idLoja
+                idProduto = parametros.get("idProduto")
+                if categoria and status and idLoja and idProduto:
+                    self.criarAnuncio(categoria, status, idLoja, idProduto)
+                    return{
+                        "status": "ok",
+                        "resposta": "Anúncio criado com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+                    
+            case "criarProduto":
+                nomeProduto = parametros.get("nome")
+                descricao = parametros.get("descricao")
+                preco = parametros.get("preco")
+                estoque = parametros.get("estoque")
+                idLoja = self.loja.idLoja
+                if nomeProduto and descricao and preco and estoque and idLoja:
+                    self.criarProduto(nomeProduto, descricao, preco, estoque, idLoja)
+                    return{
+                        "status": "ok",
+                        "resposta": "Produto criado com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+                    
+            case "cadastrarUsuario":
+                idUsuario = parametros.get("idUser")
+                nomeUser = parametros.get("nome")
+                email = parametros.get("email")
+                senha = parametros.get("senha")
+                if idUsuario and nomeUser and email and senha:
+                    self.cadastrarUsuario(idUsuario, nomeUser, email, senha)
+                    return{
+                        "status": "ok",
+                        "resposta": "Usuário cadastrado com sucesso"
+                    }
+                else:
+                    return {
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+                    
+            case "fazerLogin":
+                idUsuario = parametros.get("idUser")
+                email = parametros.get("email")
+                senha = parametros.get("senha")
+                if idUsuario and email and senha:
+                    response = self.fazerLogin(idUsuario, email, senha)
+                    if response == 200:
+                        return{
+                            "status": "ok",
+                            "resposta": "Usuário logado com sucesso"
+                        }
+                    else:
+                        return {
+                            "status": "erro",
+                            "resposta": "Usuário não cadastrado"
+                        }
+                else:
+                    return {
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+            
+            case "excluirLoja":
+                self.excluirLoja(self.banco)
+                return{
                     "status": "ok",
-                    "resposta": "Loja criada com sucesso"
+                    "resposta": "Loja excluída com sucesso"
                 }
-            else:
-                return {
-                    "status": "erro",
-                    "resposta": "Parâmetros inválidos"
-                }
-        else:
-            return {"status": "erro", "resposta": "Comando desconhecido"}
+            
+            case "excluirAnuncio":
+                idAnuncio = parametros.get("idAnuncio")
+                if idAnuncio:
+                    self.excluirAnuncio(idAnuncio, self.banco)
+                    return{
+                        "status": "erro",
+                        "resposta": "Anuncio excluído com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+                
+            case "excluirProduto":
+                idProduto = parametros.get("idProduto")
+                if idProduto:
+                    self.excluirAnuncio(idProduto, self.banco)
+                    return{
+                        "status": "erro",
+                        "resposta": "Produto excluído com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+                
+            
+            case _:
+                return {"status": "erro", "resposta": "Comando desconhecido"}
     
     
-    # Cria uma Loja e adiciona ela no banco
+    # Operações de Criação:
     def criarLoja(self, nome: str, endereco: str, descricao: str, idUsuario: int):
         loja = Loja(nome, endereco, descricao, idUsuario)
         self.loja = loja
         loja.criarLojaBanco(self.banco)
-        print("Loja Adicionada no Banco!\n")
         return loja.idLoja
     
-    # Cria um Anuncio e adiciona ele no banco
     def criarAnuncio(self, categoria: Categoria, status: Status, idLoja: int, idProduto: int):
         anuncio = Anuncio(idProduto, idLoja, categoria, status)
         anuncio.criarAnuncioBanco(self.banco)
         self.loja.adicionaAnuncio(anuncio)
         return anuncio.idAnuncio
     
-    # Cria um Produto e adiciona ele no banco
-    def criarProduto(self, nome: str, descricao: str, preco: float, estoque: int):
-        produto = Produto(nome, descricao, preco, estoque)
+    def criarProduto(self, nome: str, descricao: str, preco: float, estoque: int, idLoja: int):
+        produto = Produto(nome, descricao, preco, estoque, idLoja)
+        self.produtos.append(produto)
+        self.loja.adicionaProduto(produto)
         produto.criarProdutoBanco(self.banco)
         return produto.idProduto
 
-    # Adiciona as informações do usuario no banco
+    # Operações de Login e Cadastro
     def cadastrarUsuario(self, idUser: int, nome: str, email: str, senha: str):
         self.banco.cadastrarUsuario(idUser, nome, email, senha)
     
-    
-    # verifica se as informações passadas são iguais as do banco
     def fazerLogin(self, idUser: int, email: str, senha: str):
         emailBanco, senhaBanco = self.banco.recuperaLogin(idUser)
         
@@ -102,3 +211,28 @@ class ControladoraServidor:
             return 200
         else:
             return 403
+        
+    # Operações de Edição:
+    
+    
+    # Operações de Exclusão:
+    def excluirLoja(self, banco: AcessoBanco):
+        self.loja.excluirLoja(banco)
+        self.loja = None
+    
+    def excluirAnuncio(self, idAnuncio: int, banco: AcessoBanco):
+        for anuncio in self.loja.anuncios:
+            if anuncio.idAnuncio == idAnuncio:
+                anuncio.excluirAnuncio(banco)
+                self.loja.anuncios.remove(anuncio)
+                break
+    
+    def excluirProduto(self, idProduto: int, banco: AcessoBanco):
+        for produto in self.loja.produtos:
+            if produto.idProduto == idProduto:
+                produto.excluirProduto(banco)
+                for anuncio in self.loja.anuncios:
+                    if anuncio.idProduto == idProduto:
+                        self.excluirAnuncio(anuncio.idAnuncio, banco)
+                self.loja.produtos.remove(produto)
+                break

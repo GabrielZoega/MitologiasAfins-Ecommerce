@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS anuncio (
     statusAnuncio TEXT NOT NULL CHECK (statusAnuncio IN ('ATIVO', 'PAUSADO')),
     FK_idProduto INTEGER NOT NULL UNIQUE,
     Fk_idLoja INTEGER NOT NULL,
-    FOREIGN KEY (FK_idProduto) REFERENCES produto (idProduto),
-    FOREIGN KEY (Fk_idLoja) REFERENCES loja (idLoja)
+    FOREIGN KEY (FK_idProduto) REFERENCES produto (idProduto) ON DELETE CASCADE,
+    FOREIGN KEY (Fk_idLoja) REFERENCES loja (idLoja) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS produto (
@@ -29,5 +29,7 @@ CREATE TABLE IF NOT EXISTS produto (
     nomeProduto TEXT NOT NULL UNIQUE,
     descricaoProduto TEXT NOT NULL,
     preco DOUBLE NOT NULL,
-    estoque INTEGER NOT NULL
+    estoque INTEGER NOT NULL,
+    FK_Loja INTEGER NOT NULL,
+    FOREIGN KEY (FK_Loja) REFERENCES loja (idLoja) ON DELETE CASCADE
 );

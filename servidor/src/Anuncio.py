@@ -24,3 +24,6 @@ class Anuncio:
         
         banco.con.commit()
         
+    def excluirAnuncio(self, banco: AcessoBanco):
+        banco.cur.execute("DELETE FROM anuncio WHERE idAnuncio = ?", (self.idAnuncio,))
+        banco.con.commit()
