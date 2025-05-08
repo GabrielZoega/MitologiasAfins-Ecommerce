@@ -47,4 +47,4 @@ class Carrinho():
             else:
                 print(f"Item '{i}' não encontrado no carrinho.")
 
-                
+    #FECHAR CARRINHO
