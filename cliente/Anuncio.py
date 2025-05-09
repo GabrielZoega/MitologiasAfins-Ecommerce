@@ -1,11 +1,11 @@
 class Anuncio():
-    def __init__(self, produto, categoria, status, idAnuncio):
-        self.produto = produto
+    def __init__(self, idProduto, categoria, status, idAnuncio):
+        self.idProduto = idProduto # Não é produto para facilitar na hora de fazer exclusão
         self.categoria = categoria
         self.status = status
         self.idAnuncio = idAnuncio
         
-    def alterarProduto(self,produto):
+    def alterarIdProduto(self,produto):
         self.produto = produto
         
     def alterarCategoria(self,categoria):
@@ -14,15 +14,13 @@ class Anuncio():
     def alterarStatus (self,status):
         self.status = status
     
-    def alterarIdAnuncio (self,idAnuncio):
-        self.idAnuncio = idAnuncio
-        
     def alterarAnuncio(self, nomeOperacao, oQueAlterar):
-        if(nomeOperacao == "alterarProduto"):
+        if(nomeOperacao == "alterarIdProduto"):
             self.alterarProduto(oQueAlterar)
         elif (nomeOperacao == "alterarCategoria"):
             self.alterarCategotia(oQueAlterar)
-        elif (nomeOperacao == "alterarStatus"):
-            self.alterarStatus(oQueAlterar)
         else:
-            self.alterarIdAnuncio(oQueAlterar)
+            self.alterarStatus(oQueAlterar)
+
+
+        

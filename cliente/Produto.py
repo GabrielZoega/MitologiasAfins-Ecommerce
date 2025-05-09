@@ -1,14 +1,11 @@
 class Produto():
-    def __init__(self, idProduto, nome, descricao, preco, estoque):
+    def __init__(self, idProduto, nome, descricao, preco, estoque, quantidadeCarrinho):
         self.idProduto = idProduto
         self.nome = nome
         self.descricao = descricao
         self.preco = preco
         self.estoque = estoque
-        
-    def alterarIdProduto(self,idProduto):
-        self.idProduto = idProduto
-        
+
     def alterarNome(self,nome):
         self.nome = nome
         
@@ -21,4 +18,3 @@ class Produto():
     def alterarEstoque (self,estoque):
         self.estoque = estoque    
         
- 

@@ -1,3 +1,5 @@
+from TipoCliente import TipoCliente
+
 class Usuario():
     def __init__(self, nome, email, senha, carrinho, tipoCliente):
         self.idUser = 0
@@ -7,4 +9,4 @@ class Usuario():
         self.carrinho = carrinho
         self.tipoCliente = tipoCliente
     
-#Fazer login
+#Fazer login -> tenho que mandar as informações para o servidor
