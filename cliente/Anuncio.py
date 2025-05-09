@@ -1,3 +1,6 @@
+from Produto import Produto
+from Status import Status
+
 class Anuncio():
     def __init__(self, idProduto, categoria, status, idAnuncio):
         self.idProduto = idProduto # Não é produto para facilitar na hora de fazer exclusão
@@ -18,7 +21,7 @@ class Anuncio():
         if(nomeOperacao == "alterarIdProduto"):
             self.alterarProduto(oQueAlterar)
         elif (nomeOperacao == "alterarCategoria"):
-            self.alterarCategotia(oQueAlterar)
+            self.alterarCategoria(oQueAlterar)
         else:
             self.alterarStatus(oQueAlterar)
 

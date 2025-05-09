@@ -1,3 +1,7 @@
+from Anuncio import Anuncio
+from Produto import Produto
+
+
 class Loja():
     def __init__(self, idLoja,nome,endereco,descricao):
         self.idLoja = idLoja
@@ -53,5 +57,5 @@ class Loja():
             if produto.idProduto == idProduto:
                 self.produtos.remove(produto)
             for anuncio in self.anuncios:    
-                if self.anuncios.idProduto == idProduto:
+                if anuncio.idProduto == idProduto:
                     self.excluirAnuncio(anuncio.idAnuncio)
