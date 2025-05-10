@@ -49,4 +49,8 @@ class Carrinho():
             else:
                 print(f"Item '{item}' não encontrado no carrinho.")
 
-    #FECHAR CARRINHO -> peço para alterar no servidor o resto 
+    def fecharCarrinho(self): 
+        self.calcularPrecoTotal()
+        # mandar solicitação para o back para ver se todos os itens no carrinho estão disponiveis
+        # mandar para o back tirar os itens totais do estoque
+        

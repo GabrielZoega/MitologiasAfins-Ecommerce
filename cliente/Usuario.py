@@ -10,3 +10,4 @@ class Usuario():
         self.tipoCliente = tipoCliente
     
 #Fazer login -> tenho que mandar as informações para o servidor
+#Como eu vou receber minhas informações?

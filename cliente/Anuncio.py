@@ -1,8 +1,9 @@
 from Produto import Produto
 from Status import Status
+from Categoria import Categoria
 
 class Anuncio():
-    def __init__(self, idProduto, categoria, status, idAnuncio):
+    def __init__(self, idProduto:int, categoria:Categoria, status: Status, idAnuncio:int):
         self.idProduto = idProduto # Não é produto para facilitar na hora de fazer exclusão
         self.categoria = categoria
         self.status = status
