@@ -24,7 +24,12 @@ class AcessoBanco:
             INSERT INTO usuario (idUsuario, nomeUsuario, email, senha)"
             VALUES (? ? ? ?)
         """, (idUser, nome, email, senha))
+        
+        self.cur.execute("SELECT idUsuario FROM usuario WHERE nomeUsuario = ?", (nome,))
+        fetch = self.cur.fetchone()        
         self.con.commit()
+        return fetch[0]
+
         
     def recuperaLogin(self, idUser: int):
         self.cur.execute("SELECT email, senha FROM usuario WHERE idUsuario = ?", (idUser))

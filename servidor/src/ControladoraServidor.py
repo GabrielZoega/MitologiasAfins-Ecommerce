@@ -55,10 +55,11 @@ class ControladoraServidor:
                 endereco = parametros.get("endereco")
                 idUsuario = parametros.get("idUsuario")
                 if nomeLoja and descricaoLoja and endereco and idUsuario:
-                    self.criarLoja(nomeLoja, endereco, descricaoLoja, idUsuario)
+                    response = self.criarLoja(nomeLoja, endereco, descricaoLoja, idUsuario)
                     return {
                         "status": "ok",
-                        "resposta": "Loja criada com sucesso"
+                        "resposta": "Loja criada com sucesso",
+                        "idLoja": response
                     }
                 else:
                     return {
@@ -72,10 +73,11 @@ class ControladoraServidor:
                 idLoja = self.loja.idLoja
                 idProduto = parametros.get("idProduto")
                 if categoria and status and idLoja and idProduto:
-                    self.criarAnuncio(categoria, status, idLoja, idProduto)
+                    response = self.criarAnuncio(categoria, status, idLoja, idProduto)
                     return{
                         "status": "ok",
-                        "resposta": "Anúncio criado com sucesso"
+                        "resposta": "Anúncio criado com sucesso",
+                        "idAnuncio": response
                     }
                 else:
                     return{
@@ -90,10 +92,11 @@ class ControladoraServidor:
                 estoque = parametros.get("estoque")
                 idLoja = self.loja.idLoja
                 if nomeProduto and descricao and preco and estoque and idLoja:
-                    self.criarProduto(nomeProduto, descricao, preco, estoque, idLoja)
+                    response = self.criarProduto(nomeProduto, descricao, preco, estoque, idLoja)
                     return{
                         "status": "ok",
-                        "resposta": "Produto criado com sucesso"
+                        "resposta": "Produto criado com sucesso",
+                        "idProduto": response
                     }
                 else:
                     return{
@@ -107,10 +110,11 @@ class ControladoraServidor:
                 email = parametros.get("email")
                 senha = parametros.get("senha")
                 if idUsuario and nomeUser and email and senha:
-                    self.cadastrarUsuario(idUsuario, nomeUser, email, senha)
+                    response = self.cadastrarUsuario(idUsuario, nomeUser, email, senha)
                     return{
                         "status": "ok",
-                        "resposta": "Usuário cadastrado com sucesso"
+                        "resposta": "Usuário cadastrado com sucesso",
+                        "idUsuario": response
                     }
                 else:
                     return {
@@ -348,7 +352,8 @@ class ControladoraServidor:
 
     # Operações de Login e Cadastro
     def cadastrarUsuario(self, idUser: int, nome: str, email: str, senha: str):
-        self.banco.cadastrarUsuario(idUser, nome, email, senha)
+        idUsuario = self.banco.cadastrarUsuario(idUser, nome, email, senha)
+        return idUsuario
     
     def fazerLogin(self, idUser: int, email: str, senha: str):
         emailBanco, senhaBanco = self.banco.recuperaLogin(idUser)

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS usuario (
     idUsuario INTEGER PRIMARY KEY AUTOINCREMENT,
-    nomeUsuario TEXT NOT NULL,
+    nomeUsuario TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
     senha TEXT NOT NULL,
     Fk_lojaUser INTEGER,
