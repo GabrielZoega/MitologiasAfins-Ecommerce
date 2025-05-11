@@ -12,21 +12,21 @@ class Loja():
         self.anuncios = []
         self.produtos = []
         
-    def alterarNome(self,nome):
+    def alterarNome(self,nome:str):
         self.nome = nome
         
-    def alterarEndereco (self,endereco):
+    def alterarEndereco (self,endereco:str):
         self.endereco = endereco
     
-    def alterarDescricao (self,descricao):
+    def alterarDescricao (self,descricao:str):
         self.descricao = descricao
     
-    def alterarAnuncio (self, idAnuncio, funcaoASerChamada, oQueAltera):
+    def alterarAnuncio (self, idAnuncio:int, funcaoASerChamada:str, oQueAltera:str):
         for anuncio in self.anuncios:
             if anuncio.idAnuncio == idAnuncio:
                anuncio.alterarAnuncio(funcaoASerChamada, oQueAltera) 
 
-    def alterarProduto (self, idProduto, funcaoASerChamada, oQueAltera):
+    def alterarProduto (self, idProduto:int, funcaoASerChamada:str, oQueAltera:str):
         for produto in self.produtos:
             if produto.idProduto == idProduto:
                 if funcaoASerChamada == "alterarNome":
@@ -45,12 +45,12 @@ class Loja():
         self.descricao = None
         self.anuncios = []
         
-    def excluirAnuncio(self,idAnuncio):
+    def excluirAnuncio(self,idAnuncio:int):
         for anuncio in self.anuncios:
             if(anuncio.idAnuncio == idAnuncio):
                 self.anuncios.remove(anuncio)
                 
-    def excluirProduto (self,idProduto):
+    def excluirProduto (self,idProduto:int):
         for produto in self.produtos:
             if produto.idProduto == idProduto:
                 self.produtos.remove(produto)

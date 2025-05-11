@@ -100,6 +100,28 @@ class ControladoraCliente():
         except Exception as e:
             print(f"\n Erro: {e}")
     
+    def fazerLogin(self,idUser:int, email: str, senha:str):
+        try:
+            payload = {
+                "comando": "fazerLogin",
+                "payload":{
+                    "idUser":idUser,
+                    "email":email,
+                    "senha": senha
+                }
+            }
+            self.sockFile.write(json.dumps(payload) + '\n')
+            self.sockFile.flush()       
+            resposta = self.sockFile.readline()
+            if resposta:
+                dados = json.loads(resposta)
+                print("Resposta: ", dados)
+                status = dados.get("status")
+                self.usuario.fazerLogin (status)
+        except Exception as e:
+            print(f"\n Erro: {e}")
+
+    
     def excluirLoja(self):
             try:
                 payload = {
@@ -289,3 +311,70 @@ class ControladoraCliente():
                             produtos.alterarNome(nome)
             except Exception as e:
                 print(f"\n Erro: {e}")
+    
+    def alterarDescricaoProduto(self, idProduto:int, descricaoProduto: str):
+            try:
+                payload = {
+                    "comando": "alterarDescricaoProduto",
+                    "parametros" :{
+                        "idProduto": idProduto,
+                        "descricao":descricaoProduto
+                    }  
+            }
+                self.sockFile.write(json.dumps(payload) + '\n')
+                self.sockFile.flush()       
+                resposta = self.sockFile.readline()
+                if resposta:
+                    dados = json.loads(resposta)
+                    print("Resposta: ", dados)
+                    for produtos in self.loja.produtos:
+                        if idProduto == produtos.idProduto:
+                            produtos.alterarDescricao(descricaoProduto)
+            except Exception as e:
+                print(f"\n Erro: {e}")
+
+    def alterarPrecoProduto (self, idProduto:int, preco:float):
+            try:
+                payload = {
+                    "comando": "alterarPreco",
+                    "parametros" :{
+                        "idProduto": idProduto,
+                        "preco": preco
+                    }  
+            }
+                self.sockFile.write(json.dumps(payload) + '\n')
+                self.sockFile.flush()       
+                resposta = self.sockFile.readline()
+                if resposta:
+                    dados = json.loads(resposta)
+                    print("Resposta: ", dados)
+                    for produtos in self.loja.produtos:
+                        if idProduto == produtos.idProduto:
+                            produtos.alterarPreco(preco)
+            except Exception as e:
+                print(f"\n Erro: {e}")        
+                
+    def alterarEstoqueProduto (self,idProduto:int, estoque: int):
+            try:
+                payload = {
+                    "comando": "alterarEstoque",
+                    "parametros" :{
+                        "idProduto": idProduto,
+                        "estoque": estoque
+                    }  
+            }
+                self.sockFile.write(json.dumps(payload) + '\n')
+                self.sockFile.flush()       
+                resposta = self.sockFile.readline()
+                if resposta:
+                    dados = json.loads(resposta)
+                    print("Resposta: ", dados)
+                    for produtos in self.loja.produtos:
+                        if idProduto == produtos.idProduto:
+                            produtos.alterarEstoque(estoque)
+            except Exception as e:
+                print(f"\n Erro: {e}")       
+
+#Falta cadastrarUsuario
+#Função fechar carrinho
+#cadastro (carrinho ?)

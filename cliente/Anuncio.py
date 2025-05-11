@@ -9,16 +9,16 @@ class Anuncio():
         self.status = status
         self.idAnuncio = idAnuncio
         
-    def alterarIdProduto(self,produto):
+    def alterarIdProduto(self,produto:int):
         self.produto = produto
         
-    def alterarCategoria(self,categoria):
+    def alterarCategoria(self,categoria:Categoria):
         self.categoria = categoria
         
-    def alterarStatus (self,status):
+    def alterarStatus (self,status:Status):
         self.status = status
     
-    def alterarAnuncio(self, nomeOperacao, oQueAlterar):
+    def alterarAnuncio(self, nomeOperacao:str, oQueAlterar:str):
         if(nomeOperacao == "alterarIdProduto"):
             self.alterarProduto(oQueAlterar)
         elif (nomeOperacao == "alterarCategoria"):

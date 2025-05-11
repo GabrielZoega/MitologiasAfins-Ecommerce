@@ -6,15 +6,15 @@ class Produto():
         self.preco = preco
         self.estoque = estoque
 
-    def alterarNome(self,nome):
+    def alterarNome(self,nome:str):
         self.nome = nome
         
-    def alterarDescricao (self,descricao):
+    def alterarDescricao (self,descricao: str):
         self.descricao = descricao
     
-    def alterarPreco (self,preco):
+    def alterarPreco (self,preco:float):
         self.preco = preco
         
-    def alterarEstoque (self,estoque):
+    def alterarEstoque (self,estoque:int):
         self.estoque = estoque    
         
