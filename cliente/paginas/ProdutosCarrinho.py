@@ -1,0 +1,63 @@
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
+from PyQt6.QtCore import QSize
+from PyQt6.QtGui import QIcon
+
+class ProdutosCarrinho(QWidget):
+    def __init__(self, paginas: QStackedWidget):
+        super().__init__()
+        self.paginas = paginas
+        self.criaCarrinho()
+    
+    def criaCarrinho(self):
+
+        main_layout = QVBoxLayout()
+
+        # for:
+        # main_layout.addWidget(ProdutoCarrinho())
+
+        self.setLayout(main_layout)
+
+
+class ProdutoCarrinho(QWidget):
+    def __init__(self, paginas: QStackedWidget):
+        super().__init__()
+        self.paginas = paginas
+        self.criaProduto()
+
+    
+    def criaProduto(self):
+
+        main_layout = QHBoxLayout()
+
+        # imagem do produto
+        imagem = QIcon()
+
+        # nome do produto
+        nome = QLabel()
+
+        # botao de diminuir a quantidade
+        diminuir_botao = QPushButton("-")
+        diminuir_botao.clicked.connect()
+
+        # quantidade
+        quantidade = QLabel()
+
+        # botao de aumentar a quantidade
+        aumentar_botao = QPushButton("+")
+        aumentar_botao.clicked.connect()
+
+        # botao de excluir do carrinho
+        excluir_botao = QPushButton()
+        excluir_botao.setIcon(QIcon())
+        excluir_botao.setIconSize(QSize(32, 32))
+        excluir_botao.clicked.connect()
+
+
+        main_layout.addWidget(imagem)
+        main_layout.addWidget(nome)
+        main_layout.addWidget(diminuir_botao)
+        main_layout.addWidget(quantidade)
+        main_layout.addWidget(aumentar_botao)
+        main_layout.addWidget(excluir_botao)
+
+        self.setLayout(main_layout)

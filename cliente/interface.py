@@ -1,40 +1,69 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
-from client import enviar_nome  
 
-class Interface(QWidget):
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget, QToolBar, QVBoxLayout, QHBoxLayout, QWidget, QStackedWidget
+from PyQt6.QtGui import QColor, QPalette, QAction
+
+from paginas.PaginaLogin import *
+from paginas.PaginaCadastro import *
+from paginas.PaginaInicial import *
+
+class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Cliente PyQt")
-        self.setGeometry(100, 100, 300, 150)
+        self.setWindowTitle("Mitologias&Afins")
+        self.resize(QSize(960, 540))
+        
+        self.setStyleSheet("background-color: #323031; color: #E2E2E2")
 
-        self.layout = QVBoxLayout()
+        # adiciona a barra de ferramentas
+        toolbar = QToolBar()
+        toolbar.setMovable(False)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
+        self.addToolBar(toolbar)
 
-        self.label = QLabel("Digite seu nome:")
-        self.layout.addWidget(self.label)
+        # botao para mudar o tema
+        self.tema = {"modo": "Tema escuro"}
+        self.action_mudar_tema = QAction(self.tema["modo"], self)
+        self.action_mudar_tema.triggered.connect(lambda: self.mudaTema(tema=self.tema))
+        toolbar.addAction(self.action_mudar_tema)
 
-        self.input_nome = QLineEdit(self)
-        self.layout.addWidget(self.input_nome)
+        self.paginas = QStackedWidget()
 
-        self.botao = QPushButton("Enviar")
-        self.botao.clicked.connect(self.enviar_nome)
-        self.layout.addWidget(self.botao)
+        # adiciona as paginas na pilha de widgets
+        self.pagina_login = PaginaLogin(self.paginas)
+        self.pagina_cadastro = PaginaCadastro()
+        self.pagina_inicial = PaginaInicial(self.paginas)
 
-        self.resposta_label = QLabel("")
-        self.layout.addWidget(self.resposta_label)
+        self.paginas.addWidget(self.pagina_login)       # 0
+        self.paginas.addWidget(self.pagina_cadastro)    # 1
+        self.paginas.addWidget(self.pagina_inicial)     # 2
+        
 
-        self.setLayout(self.layout)
+        self.setCentralWidget(self.paginas)  
+        self.paginas.setCurrentIndex(2)     
+        
+   
 
-    def enviar_nome(self):
-        nome = self.input_nome.text()
-        if nome:
-            resposta = enviar_nome(nome)
-            self.resposta_label.setText(resposta)
+    def mudaTema(self, tema):
+        if(tema["modo"] == "Tema escuro"):
+            self.setStyleSheet("background-color: #BBBAC6; color: #323031")
+            tema["modo"] = "Tema claro"
             
+        else:
+            self.setStyleSheet("background-color: #323031; color: #E2E2E2")
+            tema["modo"] = "Tema escuro"
+
+        self.action_mudar_tema.setText(tema["modo"])
+
+
+
 
 app = QApplication(sys.argv)
-janela = Interface()
-janela.show()
-sys.exit(app.exec())
+
+window = MainWindow()
+window.show()
+
+app.exec()
