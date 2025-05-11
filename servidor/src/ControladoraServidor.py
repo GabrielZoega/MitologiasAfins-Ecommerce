@@ -105,12 +105,11 @@ class ControladoraServidor:
                     }
                     
             case "cadastrarUsuario":
-                idUsuario = parametros.get("idUser")
                 nomeUser = parametros.get("nome")
                 email = parametros.get("email")
                 senha = parametros.get("senha")
-                if idUsuario and nomeUser and email and senha:
-                    response = self.cadastrarUsuario(idUsuario, nomeUser, email, senha)
+                if nomeUser and email and senha:
+                    response = self.cadastrarUsuario(nomeUser, email, senha)
                     return{
                         "status": "ok",
                         "resposta": "Usuário cadastrado com sucesso",
@@ -326,6 +325,38 @@ class ControladoraServidor:
                         "resposta": "Parâmetros inválidos"
                     }
             
+            case "adicionarItem":
+                idCarrinho = parametros.get("idCarrinho")
+                idProduto = parametros.get("idProduto")
+                quantidade = parametros.get("quantidade")
+                if idCarrinho and idProduto and quantidade:
+                    response = self.adicionarItem(idCarrinho, idProduto, quantidade)
+                    return {
+                        "status": "ok",
+                        "resposta": "Item adicionado com sucesso",
+                        "idItem": response
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+            
+            case "alterarQuantidade":
+                idItem = parametros.get("idItem")
+                quantidade = parametros.get("quantidade")
+                if idItem and quantidade:
+                    self.alterarQuantidade(idItem, quantidade)
+                    return{
+                        "status": "ok",
+                        "resposta": "Quantidade alterada com sucesso"
+                    }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+            
             case _:
                 return {"status": "erro", "resposta": "Comando desconhecido"}
     
@@ -351,8 +382,9 @@ class ControladoraServidor:
         return produto.idProduto
 
     # Operações de Login e Cadastro
-    def cadastrarUsuario(self, idUser: int, nome: str, email: str, senha: str):
-        idUsuario = self.banco.cadastrarUsuario(idUser, nome, email, senha)
+    def cadastrarUsuario(self, nome: str, email: str, senha: str):
+        idCarrinho = self.banco.criarCarrinho()
+        idUsuario = self.banco.cadastrarUsuario(nome, email, senha, idCarrinho)
         return idUsuario
     
     def fazerLogin(self, idUser: int, email: str, senha: str):
@@ -445,3 +477,12 @@ class ControladoraServidor:
                         self.excluirAnuncio(anuncio.idAnuncio, banco)
                 self.loja.produtos.remove(produto)
                 break
+    
+    
+    # Funções de edição do carrinho
+    def adicionarItem(self, idCarrinho: int, idProduto: int, quantidade: int):
+        idItem = self.banco.adicionarItem(idCarrinho, idProduto, quantidade)
+        return idItem
+    
+    def alterarQuantidade(self, idItem: int, quantidade: int):
+        self.banco.alterarQuantidade()

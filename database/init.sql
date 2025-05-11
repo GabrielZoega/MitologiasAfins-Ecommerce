@@ -3,8 +3,24 @@ CREATE TABLE IF NOT EXISTS usuario (
     nomeUsuario TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
     senha TEXT NOT NULL,
-    Fk_lojaUser INTEGER,
-    FOREIGN KEY (Fk_lojaUser) REFERENCES loja (idLoja)
+    FK_lojaUser INTEGER,
+    FK_carrinho INTEGER NOT NULL,
+    FOREIGN KEY (FK_lojaUser) REFERENCES loja (idLoja)
+    FOREIGN KEY (FK_carrinho) REFERENCES carrinho (idCarrinho)
+);
+
+CREATE TABLE IF NOT EXISTS carrinho(
+    idCarrinho INTEGER PRIMARY KEY AUTOINCREMENT,
+    total INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS item(
+    idItem INTEGER PRIMARY KEY AUTOINCREMENT,
+    FK_idCarrinho INTEGER NOT NULL,
+    FK_produto INTEGER NOT NULL,
+    quantidade INTEGER NOT NULL,
+    FOREIGN KEY (FK_idCarrinho) REFERENCES carrinho (idCarrinho),
+    FOREIGN KEY (FK_produto) REFERENCES produto (idProduto)
 );
 
 CREATE TABLE IF NOT EXISTS loja (
@@ -19,9 +35,9 @@ CREATE TABLE IF NOT EXISTS anuncio (
     categoria TEXT NOT NULL CHECK (categoria IN ('TESTE')),
     statusAnuncio TEXT NOT NULL CHECK (statusAnuncio IN ('ATIVO', 'PAUSADO')),
     FK_idProduto INTEGER NOT NULL UNIQUE,
-    Fk_idLoja INTEGER NOT NULL,
+    FK_idLoja INTEGER NOT NULL,
     FOREIGN KEY (FK_idProduto) REFERENCES produto (idProduto) ON DELETE CASCADE,
-    FOREIGN KEY (Fk_idLoja) REFERENCES loja (idLoja) ON DELETE CASCADE
+    FOREIGN KEY (FK_idLoja) REFERENCES loja (idLoja) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS produto (

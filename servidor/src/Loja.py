@@ -20,7 +20,7 @@ class Loja:
             VALUES (?, ?, ?)
         """, (self.nome, self.endereco, self.descricao))
         
-        banco.cur.execute("UPDATE usuario SET Fk_lojaUser = ? WHERE idUsuario = ?", (self.idLoja, self.idUsuario))
+        banco.cur.execute("UPDATE usuario SET FK_lojaUser = ? WHERE idUsuario = ?", (self.idLoja, self.idUsuario))
         
         banco.cur.execute("SELECT idLoja FROM loja WHERE nomeLoja = ?", (self.nome,))
         result = banco.cur.fetchone()

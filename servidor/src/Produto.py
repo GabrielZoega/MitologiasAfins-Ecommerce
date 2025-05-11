@@ -12,7 +12,7 @@ class Produto:
     
     def criarProdutoBanco(self, banco: AcessoBanco):
         banco.cur.execute("""
-            INSERT INTO produto (nomeProduto, descricaoProduto, preco, estoque, Fk_Loja)
+            INSERT INTO produto (nomeProduto, descricaoProduto, preco, estoque, FK_Loja)
             VALUES (?, ?, ?, ?, ?)
         """, (self.nome, self.descricao, self.preco, self.estoque, self.idLoja))
         

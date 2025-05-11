@@ -18,7 +18,7 @@ class Anuncio:
             VALUES (?, ?, ?, ?)
         """, (self.categoria, self.status, self.idProduto, self.idLoja))
         
-        banco.cur.execute("SELECT idAnuncio FROM anuncio WHERE Fk_idProduto = ?", (self.idProduto))
+        banco.cur.execute("SELECT idAnuncio FROM anuncio WHERE FK_idProduto = ?", (self.idProduto))
         result = banco.cur.fetchone()
         self.idAnuncio = result[0]
         
@@ -37,5 +37,5 @@ class Anuncio:
         banco.con.commit()
         
     def alterarProduto(self, idProduto: int, banco: AcessoBanco):
-        banco.cur.execute("UPDATE anuncio SET Fk_idProduto = ? WHERE idAnuncio = ?", (idProduto, self.idAnuncio))
+        banco.cur.execute("UPDATE anuncio SET FK_idProduto = ? WHERE idAnuncio = ?", (idProduto, self.idAnuncio))
         banco.con.commit()

@@ -19,22 +19,40 @@ class AcessoBanco:
     def getCur(self):
         return self.con.cursor()
     
-    def cadastrarUsuario(self, idUser: int, nome: str, email: str, senha: str):
+    def cadastrarUsuario(self, nome: str, email: str, senha: str, idCarrinho: int):
         self.cur.execute("""
-            INSERT INTO usuario (idUsuario, nomeUsuario, email, senha)"
-            VALUES (? ? ? ?)
-        """, (idUser, nome, email, senha))
+            INSERT INTO usuario (nomeUsuario, email, senha, FK_carrinho)"
+            VALUES (?, ?, ?, ?)
+        """, (nome, email, senha, idCarrinho))
         
         self.cur.execute("SELECT idUsuario FROM usuario WHERE nomeUsuario = ?", (nome,))
         fetch = self.cur.fetchone()        
         self.con.commit()
         return fetch[0]
 
-        
     def recuperaLogin(self, idUser: int):
         self.cur.execute("SELECT email, senha FROM usuario WHERE idUsuario = ?", (idUser))
         result = self.cur.fetchone()
         self.con.commit()
         email, senha = result
         return email, senha
+
+    def criarCarrinho(self):
+        self.cur.execute("INSERT INTO carrinho (total) VALUES (?)", (0,))
+        idCarrinho = self.cur.lastrowid
+        self.con.commit()
+        return idCarrinho
+
+    def adicionarItem(self, idCarrinho: int, idProduto: int, quantidade: int):
+        self.cur.execute("""
+            INSERT INTO item (FK_idCarrinho, FK_produto, quantidade)"
+            VALUES (?, ?, ?)
+        """, (idCarrinho, idProduto, quantidade))
         
+        idItem = self.cur.lastrowid      
+        self.con.commit()
+        return idItem
+
+    def alterarQuantidade(self, idItem: int, quantidade: int):
+        self.cur.execute("UPDATE item SET quantidade = ? WHERE idItem = ?", (quantidade, idItem))
+        self.con.commit()
