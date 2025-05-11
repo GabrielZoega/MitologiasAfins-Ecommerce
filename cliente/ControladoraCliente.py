@@ -17,6 +17,7 @@ class ControladoraCliente():
         self.host = host
         self.porta = porta
         self.loja = None
+        self.carrinho = None
         self.usuario = None
         self.sockFile = None
         
@@ -99,7 +100,29 @@ class ControladoraCliente():
                 self.loja.produtos.append(Produto(idProduto,nomeProduto,descricao,preco,estoque))
         except Exception as e:
             print(f"\n Erro: {e}")
-    
+            
+    def cadastrarUsuario(self,nome:str,email:str,senha:str):
+        try:
+            payload = {
+                "comando": "cadastrarUsuario",
+                "parametros": {
+                    "nome": nome,
+                    "email": email,
+                    "senha": senha
+                    }
+                }
+            self.sockFile.write(json.dumps(payload) + '\n')
+            self.sockFile.flush()       
+            resposta = self.sockFile.readline()
+            if resposta:
+                dados = json.loads(resposta)
+                print("Resposta: ", dados)
+                idUsuario = dados.get("idUsuario")
+                idCarrinho = dados.get("idCarrinho")
+                self.usuario.cadastrarUsuario(idUsuario,nome, email, senha, idCarrinho, TipoCliente.COMPRADOR) #Verificar se está certo essa passagem de parâmetro
+        except Exception as e:
+            print(f"\n Erro: {e}")
+        
     def fazerLogin(self,idUser:int, email: str, senha:str):
         try:
             payload = {
@@ -373,8 +396,68 @@ class ControladoraCliente():
                         if idProduto == produtos.idProduto:
                             produtos.alterarEstoque(estoque)
             except Exception as e:
+                print(f"\n Erro: {e}")
+                
+    def adcionarItem(self,idCarrinho:int,idProduto:int,quantidade:int):
+            try:
+                payload = {
+                    "comando": "adicionarItem",
+                    "parametros" :{
+                        "idCarrinho": idCarrinho,
+                        "idProduto": idProduto,
+                        "quantidade": quantidade
+                    }  
+            }   
+                self.sockFile.write(json.dumps(payload) + '\n')
+                self.sockFile.flush()       
+                resposta = self.sockFile.readline()
+                if resposta:
+                    dados = json.loads(resposta)
+                    print("Resposta: ", dados)
+                    idItem = dados.get("idItem")
+                    precoProduto = dados.get("preco")
+                    self.carrinho.adicionarItem(idProduto,precoProduto,quantidade, idItem)
+            except Exception as e:
+                print(f"\n Erro: {e}")
+    
+    def alterarQuantidade(self,idItem:int, quantidade:int):
+            try:
+                payload = {
+                    "comando": "alterarQuantidade",
+                    "parametros" :{
+                        "idItem": idItem,
+                        "quantidade": quantidade
+                    }  
+            }   
+                self.sockFile.write(json.dumps(payload) + '\n')
+                self.sockFile.flush()       
+                resposta = self.sockFile.readline()
+                if resposta:
+                    dados = json.loads(resposta)
+                    print("Resposta: ", dados)
+                    self.carrinho.alterarQuantidade(quantidade,idItem)
+            except Exception as e:
+                print(f"\n Erro: {e}")        
+    
+    def fecharCarrinho(self, idCarrinho):
+            try:
+                payload = {
+                    "comando": "fecharCarrinho",
+                    "parametros" :{
+                        "idItem": idCarrinho
+                    }  
+            }   
+                self.sockFile.write(json.dumps(payload) + '\n')
+                self.sockFile.flush()       
+                resposta = self.sockFile.readline()
+                if resposta:
+                    dados = json.loads(resposta)
+                    print("Resposta: ", dados)
+                    codigo = dados.get("codigo")
+                    if codigo == 200:
+                        self.carrinho.fecharCarrinho()
+                    else:
+                        print("Não é possível fechar esse carrinho")
+            except Exception as e:
                 print(f"\n Erro: {e}")       
-
-#Falta cadastrarUsuario
-#Função fechar carrinho
-#cadastro (carrinho ?)
+                      

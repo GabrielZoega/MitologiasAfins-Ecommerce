@@ -1,4 +1,5 @@
 from TipoCliente import TipoCliente
+from Carrinho import Carrinho
 
 class Usuario():
     def __init__(self, nome:str, email:str, senha:str, idCarrinho:int, tipoCliente:TipoCliente):
@@ -8,9 +9,9 @@ class Usuario():
         self.senha = senha
         self.idCarrinho = idCarrinho
         self.tipoCliente = tipoCliente
+        Carrinho(idCarrinho)#Não sei se isso ta certo
         
-# Cadastrar usuário não seria só fazer ele passar pelo construtor?
-    def CadastrarUsuario(self, idUser: int, nome:str, email:str, senha:str, idCarrinho:int, tipoCliente:TipoCliente):
+    def cadastrarUsuario(self, idUser: int, nome:str, email:str, senha:str, idCarrinho:int, tipoCliente:TipoCliente):
         self.Usuario(nome, email, senha, idCarrinho, tipoCliente)
         self.idUser = idUser
         

@@ -1,15 +1,14 @@
 from Item import Item
 
 class Carrinho():
-    def __init__(self):
+    def __init__(self,idCarrinho:int):
         self.itens = []
         self.idCarrinho = 0
-        self.total = 0.0
+#       self.total = 0.0
         
-    def adicionarItem (self, item):
-        item.quantidadeCarrinho = 1
-        self.itens.append(item)
-        
+    def adicionarItem (self, idProduto:int, precoItem:float,quantidade:int,idItem:int):
+        self.itens.append(Item(idProduto,precoItem,idItem,quantidade))
+         
     def removerItem (self, idProduto):
         for item in self.itens:
             if item.idProduto == idProduto:
@@ -27,30 +26,20 @@ class Carrinho():
     
     def calcularPrecoTotal(self): # percorre os itens do carrinho multiplicando o preço preço pela quantidade
         for item in self.itens:
-            self.total += item.precoItem * item.quantidadeCarrinho
+            total += item.precoItem * item.quantidadeCarrinho
+        return total
 
-    def aumentarQuantidadeItem(self, idProduto): #Essa função serve para poder aumentar a quantidade de um certo item no carrinho
-        for item in self.itens: # verificar como fazer esse for melhor
-            if item.idProduto == idProduto:
-                item.quantidadeCarrinho = item.quantidadeCarrinho + 1
-                return
-            else:
-                print(f"Item '{item}' não encontrado no carrinho.")
-
-    def diminuirQuantidadeItem(self, idProduto): #Essa função serve para poder aumentar a quantidade de um certo item no carrinho
-       for item in self.itens:
-            if item.idProduto == idProduto:
-               if item.quantidadeCarrinho == 1:
-                   self.removerItem(idProduto)
-                   return
-               else: 
-                   item.quantidadeCarrinho = item.quantidadeCarrinho - 1
-                   return
-            else:
-                print(f"Item '{item}' não encontrado no carrinho.")
-
-    def fecharCarrinho(self): 
-        self.calcularPrecoTotal()
+    def alterarQuantidade(self,quantidade:int,idItem:int):
+        for itens in self.itens:
+            if itens.idItem == idItem:
+                if quantidade == 0:
+                    self.removerItem(itens.idProduto)
+                else:
+                    itens.quantidadeCarrinho = quantidade
+        
+    def fecharCarrinho(self,idCarrinho:int): 
+        print(f"Preço total: {self.calcularPrecoTotal()}")
+        self.itens = []
         # mandar solicitação para o back para ver se todos os itens no carrinho estão disponiveis
         # mandar para o back tirar os itens totais do estoque
         
