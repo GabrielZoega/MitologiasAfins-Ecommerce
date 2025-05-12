@@ -109,11 +109,12 @@ class ControladoraServidor:
                 email = parametros.get("email")
                 senha = parametros.get("senha")
                 if nomeUser and email and senha:
-                    response = self.cadastrarUsuario(nomeUser, email, senha)
+                    idUsuario, idCarrinho = self.cadastrarUsuario(nomeUser, email, senha)
                     return{
                         "status": "ok",
                         "resposta": "Usuário cadastrado com sucesso",
-                        "idUsuario": response
+                        "idUsuario": idUsuario,
+                        "idCarrinho": idCarrinho
                     }
                 else:
                     return {
@@ -330,11 +331,12 @@ class ControladoraServidor:
                 idProduto = parametros.get("idProduto")
                 quantidade = parametros.get("quantidade")
                 if idCarrinho and idProduto and quantidade:
-                    response = self.adicionarItem(idCarrinho, idProduto, quantidade)
+                    idItem, preco = self.adicionarItem(idCarrinho, idProduto, quantidade)
                     return {
                         "status": "ok",
                         "resposta": "Item adicionado com sucesso",
-                        "idItem": response
+                        "idItem": idItem,
+                        "preco": preco
                     }
                 else:
                     return{
@@ -355,6 +357,42 @@ class ControladoraServidor:
                     return{
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
+                    }
+            
+            case "fecharCarrinho":
+                idCarrinho = parametros.get("idCarrinho")
+                if idCarrinho:
+                    codigo = self.fecharCarrinho(idCarrinho)
+                    if codigo == 200:
+                        return {
+                            "status": "ok",
+                            "resposta": "Carrinho fechado com sucesso",
+                            "codigo": codigo
+                        }
+                    else:
+                        return {
+                            "status": "erro",
+                            "resposta": "Estoque insuficiente",
+                            "codigo": codigo
+                        }
+                else:
+                    return{
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+            
+            case "recuperaAnuncios":
+                anuncios = self.recuperaAnuncios()
+                if anuncios:
+                    return {
+                        "status": "ok",
+                        "resposta": "Todos os anuncios foram recuperados",
+                        "anuncios": anuncios
+                    }
+                else:
+                    return {
+                        "status": "erro",
+                        "resposta": "Erro ao recuperar os anuncios do banco"
                     }
             
             case _:
@@ -385,7 +423,7 @@ class ControladoraServidor:
     def cadastrarUsuario(self, nome: str, email: str, senha: str):
         idCarrinho = self.banco.criarCarrinho()
         idUsuario = self.banco.cadastrarUsuario(nome, email, senha, idCarrinho)
-        return idUsuario
+        return idUsuario, idCarrinho
     
     def fazerLogin(self, idUser: int, email: str, senha: str):
         emailBanco, senhaBanco = self.banco.recuperaLogin(idUser)
@@ -482,7 +520,51 @@ class ControladoraServidor:
     # Funções de edição do carrinho
     def adicionarItem(self, idCarrinho: int, idProduto: int, quantidade: int):
         idItem = self.banco.adicionarItem(idCarrinho, idProduto, quantidade)
-        return idItem
+        self.banco.cur.execute("SELECT preco FROM produto WHERE idProduto = ?", (idProduto,))
+        result = self.banco.cur.fetchone()
+        preco = result[0]
+        self.banco.con.commit()
+        
+        return idItem, preco
     
     def alterarQuantidade(self, idItem: int, quantidade: int):
-        self.banco.alterarQuantidade()
+        self.banco.alterarQuantidade(idItem, quantidade)
+    
+    def fecharCarrinho(self, idCarrinho: int):
+        self.banco.cur.execute("SELECT idItem, FK_produto, quantidade FROM item WHERE FK_idCarrinho = ?", (idCarrinho,))
+        itens = self.banco.cur.fetchall()
+
+        for item in itens:
+            idItem, idProduto, quantidade = item
+            self.banco.cur.execute("SELECT estoque FROM produto WHERE idProduto = ?", (idProduto,))
+            estoque = self.banco.cur.fetchone()[0]
+
+            if quantidade > estoque:
+                return 403
+
+        for item in itens:
+            idItem, idProduto, quantidade = item
+            self.banco.cur.execute("SELECT estoque FROM produto WHERE idProduto = ?", (idProduto,))
+            estoque = self.banco.cur.fetchone()[0]
+            novoEstoque = estoque - quantidade
+
+            self.alterarEstoque(idProduto, novoEstoque)
+            self.banco.cur.execute("DELETE FROM item WHERE idItem = ?", (idItem,))
+
+        self.banco.con.commit()
+        return 200
+        
+    
+    # Função responsável por iniciar o feed com os Anuncios
+    def recuperaAnuncios(self):
+        self.banco.cur.execute("SELECT * FROM anuncio")
+        anunciosBanco = self.banco.cur.fetchall()
+        anuncios = []
+        
+        for anuncio in anunciosBanco:
+            idAnuncio, categoria, statusAnuncio, idProduto, idLoja = anuncio
+            anuncioAux = Anuncio(idProduto, idLoja, categoria, statusAnuncio)
+            anuncioAux.idAnuncio = idAnuncio
+            anuncios.append(anuncioAux)
+        
+        return anuncios

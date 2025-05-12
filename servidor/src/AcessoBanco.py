@@ -21,9 +21,9 @@ class AcessoBanco:
     
     def cadastrarUsuario(self, nome: str, email: str, senha: str, idCarrinho: int):
         self.cur.execute("""
-            INSERT INTO usuario (nomeUsuario, email, senha, FK_carrinho)"
-            VALUES (?, ?, ?, ?)
-        """, (nome, email, senha, idCarrinho))
+            INSERT INTO usuario (nomeUsuario, email, senha, FK_carrinho, tipoUsuario)"
+            VALUES (?, ?, ?, ?, ?)
+        """, (nome, email, senha, idCarrinho, 'COMPRADOR'))
         
         self.cur.execute("SELECT idUsuario FROM usuario WHERE nomeUsuario = ?", (nome,))
         fetch = self.cur.fetchone()        
@@ -48,11 +48,25 @@ class AcessoBanco:
             INSERT INTO item (FK_idCarrinho, FK_produto, quantidade)"
             VALUES (?, ?, ?)
         """, (idCarrinho, idProduto, quantidade))
+        idItem = self.cur.lastrowid
         
-        idItem = self.cur.lastrowid      
+        self.cur.execute("SELECT preco FROM produto WHERE idProduto = ?", (idProduto,))
+        preco = self.cur.fetchone()
+        preco = preco[0]
+        
+        self.cur.execute("SELECT total FROM carrinho WHERE idCarrinho = ?", (idCarrinho,))
+        total = self.cur.fetchone()
+        total = total[0]
+        
+        total += preco * quantidade
+        self.cur.execute("UPDATE carrinho SET total = ? WHERE idCarrinho = ?", (total, idCarrinho))
+        
         self.con.commit()
         return idItem
 
     def alterarQuantidade(self, idItem: int, quantidade: int):
-        self.cur.execute("UPDATE item SET quantidade = ? WHERE idItem = ?", (quantidade, idItem))
+        if quantidade == 0:
+            self.cur.execute("DELETE FROM item WHERE idItem = ?", (idItem,))
+        else:
+            self.cur.execute("UPDATE item SET quantidade = ? WHERE idItem = ?", (quantidade, idItem))
         self.con.commit()

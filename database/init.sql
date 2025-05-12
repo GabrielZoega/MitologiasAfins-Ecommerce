@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     nomeUsuario TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
     senha TEXT NOT NULL,
+    tipoUsuario TEXT NOT NULL CHECK (tipoUsuario IN ('VENDEDOR', 'COMPRADOR')),
     FK_lojaUser INTEGER,
     FK_carrinho INTEGER NOT NULL,
     FOREIGN KEY (FK_lojaUser) REFERENCES loja (idLoja)
