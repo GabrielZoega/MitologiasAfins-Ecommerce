@@ -1,3 +1,4 @@
+
 import sys
 
 from PyQt6.QtCore import QSize, Qt
@@ -90,8 +91,7 @@ class MainWindow(QMainWindow):
     def mudaTema(self, tema):
         if(tema["modo"] == "Tema escuro"):
             self.setStyleSheet("background-color: #BBBAC6; color: #323031")
-            tema["modo"] = "Tema claro"
-            
+            tema["modo"] = "Tema claro"            
         else:
             self.setStyleSheet("background-color: #323031; color: #E2E2E2")
             tema["modo"] = "Tema escuro"
@@ -113,10 +113,11 @@ class MainWindow(QMainWindow):
     def paginaEditarLoja(self):
         self.paginas.setCurrentIndex(PAGINA_EDITAR_LOJA)
 
-
+        
 app = QApplication(sys.argv)
 
 window = MainWindow()
 window.show()
 
 app.exec()
+
