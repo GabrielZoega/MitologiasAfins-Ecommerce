@@ -1,5 +1,8 @@
 FROM python:3.11-slim
 
+# Desabilitar bufferização da saída
+ENV PYTHONUNBUFFERED=1
+
 RUN apt-get update && apt-get install -y \
   libx11-xcb1 \
   libxcb-icccm4 \
@@ -29,9 +32,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 RUN ls 
 
-COPY client.py .
-COPY interface.py .
+COPY src/ ./src/
 
-RUN chmod +x interface.py
+#RUN chmod +x interface.py talvez isso aqui volte depois
 
-CMD ["python", "interface.py"] 
+CMD ["python", "src/client.py"] 
