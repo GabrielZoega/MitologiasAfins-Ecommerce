@@ -461,3 +461,18 @@ class ControladoraCliente():
             except Exception as e:
                 print(f"\n Erro: {e}")       
                       
+    def recuperaAnuncios (self):
+        try:
+            payload = {
+                "comando": "recuperaAnuncios"
+            }
+            self.sockFile.write(json.dumps(payload) + '\n')
+            self.sockFile.flush()       
+            resposta = self.sockFile.readline()
+            if resposta:
+                dados = json.loads(resposta)
+                print("Resposta: ", dados)
+                anuncios = dados.get("anuncios")
+                return anuncios
+        except Exception as e:
+            print(f"\n Erro: {e}") 
