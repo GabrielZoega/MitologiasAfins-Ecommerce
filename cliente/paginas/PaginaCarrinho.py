@@ -28,14 +28,14 @@ class PaginaCarrinho(QWidget):
         carrinho_label = QLabel("Carrinho")
 
         # produtos no carrinho
-        lista_produtos = ProdutosCarrinho()
+        lista_produtos = ProdutosCarrinho(paginas=self.paginas)
 
         # botao de fechar compra
         fechar_compra_botao = QPushButton("Fechar Compra")
-        fechar_compra_botao.clicked.connect()
+        # fechar_compra_botao.clicked.connect()
 
         # centro da pagina
-        centro_layout.addLayout(carrinho_label)
+        centro_layout.addWidget(carrinho_label)
         centro_layout.addWidget(lista_produtos)
         centro_layout.addWidget(fechar_compra_botao)
         

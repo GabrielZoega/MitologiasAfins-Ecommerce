@@ -49,7 +49,7 @@ class PaginaEditarLoja(QWidget):
 
         # endereco
         endereco_layout = QHBoxLayout()
-        endereco_label = QLabel("Senha:")
+        endereco_label = QLabel("Endereço:")
         self.endereco_input = QLineEdit()
         self.endereco_input.setPlaceholderText("")
         endereco_layout.addWidget(endereco_label)

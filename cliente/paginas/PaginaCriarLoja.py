@@ -38,7 +38,7 @@ class PaginaCriarLoja(QWidget):
 
         # endereco
         endereco_layout = QHBoxLayout()
-        endereco_label = QLabel("Senha:")
+        endereco_label = QLabel("Endereço:")
         self.endereco_input = QLineEdit()
         endereco_layout.addWidget(endereco_label)
         endereco_layout.addWidget(self.endereco_input)

@@ -35,7 +35,7 @@ class PaginaInicial(QWidget):
         barra_pesquisa_layout.addWidget(pesquisa_botao)
 
         # anuncios
-        anuncios_grid = GridAnuncios(paginas=self.paginas)
+        anuncios_grid = GridAnuncios(paginas=self.paginas, tipo_usuario="Cliente")
 
         # centro da pagina
         centro_layout.addLayout(barra_pesquisa_layout)
