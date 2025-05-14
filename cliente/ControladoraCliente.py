@@ -120,6 +120,7 @@ class ControladoraCliente():
                 idUsuario = dados.get("idUsuario")
                 idCarrinho = dados.get("idCarrinho")
                 self.usuario.cadastrarUsuario(idUsuario,nome, email, senha, idCarrinho, TipoCliente.COMPRADOR) #Verificar se está certo essa passagem de parâmetro
+                self.carrinho = Carrinho(idCarrinho)
         except Exception as e:
             print(f"\n Erro: {e}")
         
