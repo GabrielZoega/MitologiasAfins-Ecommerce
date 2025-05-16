@@ -425,13 +425,18 @@ class ControladoraServidor:
                     }
             
             case "recuperaAnuncios":
-                anuncios = self.recuperaAnuncios()
-                if anuncios:
+                qntAnuncios, idsAnuncio, categorias, status, idsProduto, idsLoja = self.recuperaAnuncios()
+                if qntAnuncios and idsAnuncio and categorias and status and idsProduto and idsLoja:
                     return {
                         "comando": "recuperaAnuncios",
                         "status": "ok",
                         "resposta": "Todos os anuncios foram recuperados",
-                        "anuncios": anuncios
+                        "qntAnuncio": qntAnuncios,
+                        "idsAnuncio": idsAnuncio,
+                        "categorias": categorias,
+                        "status": status,
+                        "idsProduto": idsProduto,
+                        "idsLoja": idsLoja 
                     }
                 else:
                     return {
@@ -604,12 +609,21 @@ class ControladoraServidor:
     def recuperaAnuncios(self):
         self.banco.cur.execute("SELECT * FROM anuncio")
         anunciosBanco = self.banco.cur.fetchall()
-        anuncios = []
+        qntAnuncios = 0
+        idsAnuncio = []
+        categorias = []
+        status = []
+        idsProduto = []
+        idsLoja = []
+        
         
         for anuncio in anunciosBanco:
             idAnuncio, categoria, statusAnuncio, idProduto, idLoja = anuncio
-            anuncioAux = Anuncio(idProduto, idLoja, categoria, statusAnuncio)
-            anuncioAux.idAnuncio = idAnuncio
-            anuncios.append(anuncioAux)
+            qntAnuncios += 1
+            idsAnuncio.append(idAnuncio)
+            categorias.append(categoria)
+            status.append(statusAnuncio)
+            idsProduto.append(idProduto)
+            idsLoja.append(idLoja)
         
-        return anuncios
+        return qntAnuncios, idsAnuncio, categorias, status, idsProduto, idsLoja

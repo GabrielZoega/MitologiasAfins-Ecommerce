@@ -160,14 +160,18 @@ class ControladoraCliente():
                             else:
                                 print("Não é possível fechar esse carrinho")
                         case "recuperaAnuncios":
-                            anuncios = dados.get("anuncios")
+                            qntAnuncios = dados.get("qntAnuncio")
+                            idsAnuncio = dados.get("idsAnuncio")
+                            categorias = dados.get("categorias")
+                            status = dados.get("status")
+                            idsProduto = dados.get("idsProduto")
+                            idsLoja = dados.get("idsLoja")
+                            
                             self.anuncios.clear()
-                            for anuncio in anuncios:
-                                idProduto = anuncio.get("idProduto")
-                                categoria = anuncio.get("categoria")
-                                status = anuncio.get("status")
-                                idAnuncio = anuncio.get("idAnuncio")
-                                self.anuncios.append(Anuncio(idProduto,categoria,status,idAnuncio))
+                            for i in range (qntAnuncios):
+                                anuncio = Anuncio(idsProduto[i], categorias[i], status[i], idsAnuncio[i], idsLoja[i])
+                                self.anuncios.append(anuncio)
+                            
                         case _:
                             print("Comando desconhecido recebido do servidor.")
                     
