@@ -9,7 +9,7 @@ class Usuario():
         self.senha = senha
         self.idCarrinho = idCarrinho
         self.tipoCliente = tipoCliente
-        Carrinho(idCarrinho)#Não sei se isso ta certo
+        self.carrinho = Carrinho(idCarrinho)#Não sei se isso ta certo
         
     def cadastrarUsuario(self, idUser: int, nome:str, email:str, senha:str, idCarrinho:int, tipoCliente:TipoCliente):
         self.Usuario(nome, email, senha, idCarrinho, tipoCliente)

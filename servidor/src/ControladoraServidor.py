@@ -57,12 +57,14 @@ class ControladoraServidor:
                 if nomeLoja and descricaoLoja and endereco and idUsuario:
                     response = self.criarLoja(nomeLoja, endereco, descricaoLoja, idUsuario)
                     return {
+                        "comando": "criarLoja",
                         "status": "ok",
                         "resposta": "Loja criada com sucesso",
                         "idLoja": response
                     }
                 else:
                     return {
+                        "comando": "criarLoja",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -75,12 +77,14 @@ class ControladoraServidor:
                 if categoria and status and idLoja and idProduto:
                     response = self.criarAnuncio(categoria, status, idLoja, idProduto)
                     return{
+                        "comando": "criarAnuncio",
                         "status": "ok",
                         "resposta": "Anúncio criado com sucesso",
                         "idAnuncio": response
                     }
                 else:
                     return{
+                        "comando": "criarAnuncio",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -94,12 +98,14 @@ class ControladoraServidor:
                 if nomeProduto and descricao and preco and estoque and idLoja:
                     response = self.criarProduto(nomeProduto, descricao, preco, estoque, idLoja)
                     return{
+                        "comando": "criarProduto",
                         "status": "ok",
                         "resposta": "Produto criado com sucesso",
                         "idProduto": response
                     }
                 else:
                     return{
+                        "comando": "criarProduto",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -111,6 +117,7 @@ class ControladoraServidor:
                 if nomeUser and email and senha:
                     idUsuario, idCarrinho = self.cadastrarUsuario(nomeUser, email, senha)
                     return{
+                        "comando": "cadastrarUsuario",
                         "status": "ok",
                         "resposta": "Usuário cadastrado com sucesso",
                         "idUsuario": idUsuario,
@@ -118,6 +125,7 @@ class ControladoraServidor:
                     }
                 else:
                     return {
+                        "comando": "cadastrarUsuario",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -130,16 +138,19 @@ class ControladoraServidor:
                     response = self.fazerLogin(idUsuario, email, senha)
                     if response == 200:
                         return{
+                            "comando": "fazerLogin",
                             "status": "ok",
                             "resposta": "Usuário logado com sucesso"
                         }
                     else:
                         return {
+                            "comando": "fazerLogin",
                             "status": "erro",
                             "resposta": "Usuário não cadastrado"
                         }
                 else:
                     return {
+                        "comando": "fazerLogin",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -147,6 +158,7 @@ class ControladoraServidor:
             case "excluirLoja":
                 self.excluirLoja(self.banco)
                 return{
+                    "comando": "excluirLoja",
                     "status": "ok",
                     "resposta": "Loja excluída com sucesso"
                 }
@@ -156,11 +168,13 @@ class ControladoraServidor:
                 if idAnuncio:
                     self.excluirAnuncio(idAnuncio, self.banco)
                     return{
+                        "comando": "excluirAnuncio",
                         "status": "erro",
                         "resposta": "Anuncio excluído com sucesso"
                     }
                 else:
                     return{
+                        "comando": "excluirAnuncio",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -170,11 +184,13 @@ class ControladoraServidor:
                 if idProduto:
                     self.excluirAnuncio(idProduto, self.banco)
                     return{
+                        "comando": "excluirProduto",
                         "status": "erro",
                         "resposta": "Produto excluído com sucesso"
                     }
                 else:
                     return{
+                        "comando": "excluirProduto",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -184,11 +200,13 @@ class ControladoraServidor:
                 if nomeLoja:
                       self.alterarNomeLoja(nomeLoja)
                       return{
+                          "comando": "alterarNomeLoja",
                           "status": "ok",
                           "resposta": "Nome da loja alterado com sucesso"
                       }
                 else:
                     return{
+                        "comando": "alterarNomeLoja",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -198,11 +216,13 @@ class ControladoraServidor:
                 if endereco:
                     self.alterarEndereco(endereco)
                     return{
+                        "comando": "alterarEndereco",
                         "status": "ok",
                         "resposta": "Endereço da loja alterado com sucesso"
                     }
                 else:
                     return{
+                        "comando": "alterarEndereco",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -212,11 +232,13 @@ class ControladoraServidor:
                 if descricaoLoja:
                     self.alterarDescricaoLoja(descricao)
                     return{
+                        "comando": "alterarDescricaoLoja",
                         "status": "ok",
                         "resposta": "Descrição da Loja alterada com sucesso"
                     }
                 else:
                     return{
+                        "comando": "alterarDescricaoLoja",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -227,11 +249,13 @@ class ControladoraServidor:
                 if idAnuncio and categoria:
                     self.alterarCategoria(idAnuncio, categoria)
                     return{
+                        "comando": "alterarCategoria",
                         "status": "ok",
                         "resposta": "Categoria alterada com sucesso"
                     }
                 else:
                     return{
+                        "comando": "alterarCategoria",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }  
@@ -242,11 +266,13 @@ class ControladoraServidor:
                 if idAnuncio and status:
                     self.alterarStatus(idAnuncio, status)
                     return{
+                        "comando": "alterarStatus",
                         "status": "ok",
                         "resposta": "Status alterado com sucesso"
                     }
                 else:
                     return{
+                        "comando": "alterarStatus",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }  
@@ -257,11 +283,13 @@ class ControladoraServidor:
                 if idAnuncio and idProduto:
                     self.alterarProduto(idAnuncio, idProduto)
                     return{
+                        "comando": "alterarProduto",
                         "status": "ok",
                         "resposta": "Produto alterado com sucesso"
                     }
                 else:
                     return{
+                        "comando": "alterarProduto",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -272,11 +300,13 @@ class ControladoraServidor:
                 if idProduto and nomeProduto:
                     self.alterarNomeProduto(idProduto, nomeProduto)
                     return{
+                        "comando": "alterarNomeProduto",
                         "status": "ok",
                         "resposta": "O nome do produto foi alterado com sucesso"
                     }
                 else:
                     return{
+                        "comando": "alterarNomeProduto",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -287,11 +317,13 @@ class ControladoraServidor:
                 if idProduto and descricaoProduto:
                     self.alterarDescricaoProduto(idProduto, descricaoProduto)
                     return{
+                        "comando": "alterarDescricaoProduto",
                         "status": "ok",
                         "resposta": "Descrição do produto alterada com sucesso"
                     }
                 else:
                     return{
+                        "comando": "alterarDescricaoProduto",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -302,11 +334,13 @@ class ControladoraServidor:
                 if idProduto and preco:
                     self.alterarPreco(idProduto, preco)
                     return{
+                        "comando": "alterarPreco",
                         "status": "ok",
                         "resposta": "Preco do produto alterado com sucesso"
                     }
                 else:
                     return{
+                        "comando": "alterarPreco",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -317,11 +351,13 @@ class ControladoraServidor:
                 if idProduto and estoque:
                     self.alterarEstoque(idProduto, estoque)
                     return{
+                        "comando": "alterarEstoque",
                         "status": "ok",
                         "resposta": "Estoque alterado com sucesso"
                     }
                 else:
                     return{
+                        "comando": "alterarEstoque",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -333,6 +369,7 @@ class ControladoraServidor:
                 if idCarrinho and idProduto and quantidade:
                     idItem, preco = self.adicionarItem(idCarrinho, idProduto, quantidade)
                     return {
+                        "comando": "adicionarItem",
                         "status": "ok",
                         "resposta": "Item adicionado com sucesso",
                         "idItem": idItem,
@@ -340,6 +377,7 @@ class ControladoraServidor:
                     }
                 else:
                     return{
+                        "comando": "adicionarItem",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -350,11 +388,13 @@ class ControladoraServidor:
                 if idItem and quantidade:
                     self.alterarQuantidade(idItem, quantidade)
                     return{
+                        "comando": "alterarQuantidade",
                         "status": "ok",
                         "resposta": "Quantidade alterada com sucesso"
                     }
                 else:
                     return{
+                        "comando": "alterarQuantidade",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -365,18 +405,21 @@ class ControladoraServidor:
                     codigo = self.fecharCarrinho(idCarrinho)
                     if codigo == 200:
                         return {
+                            "comando": "fecharCarrinho",
                             "status": "ok",
                             "resposta": "Carrinho fechado com sucesso",
                             "codigo": codigo
                         }
                     else:
                         return {
+                            "comando": "fecharCarrinho",
                             "status": "erro",
                             "resposta": "Estoque insuficiente",
                             "codigo": codigo
                         }
                 else:
                     return{
+                        "comando": "fecharCarrinho",
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
@@ -385,12 +428,14 @@ class ControladoraServidor:
                 anuncios = self.recuperaAnuncios()
                 if anuncios:
                     return {
+                        "comando": "recuperaAnuncios",
                         "status": "ok",
                         "resposta": "Todos os anuncios foram recuperados",
                         "anuncios": anuncios
                     }
                 else:
                     return {
+                        "comando": "recuperaAnuncios",
                         "status": "erro",
                         "resposta": "Erro ao recuperar os anuncios do banco"
                     }

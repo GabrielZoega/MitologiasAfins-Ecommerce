@@ -40,4 +40,4 @@ COPY src/ ./src/
 
 #RUN chmod +x interface.py talvez isso aqui volte depois
 
-CMD ["python", "src/client.py"] 
+CMD ["python", "src/ClienteMain.py"] 

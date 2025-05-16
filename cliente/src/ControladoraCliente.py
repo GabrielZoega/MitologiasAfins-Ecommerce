@@ -10,6 +10,7 @@ from Produto import Produto
 from Status import Status
 from TipoCliente import TipoCliente
 from Usuario import Usuario
+import threading
 
 class ControladoraCliente():
     
@@ -19,6 +20,8 @@ class ControladoraCliente():
         self.loja = None
         self.carrinho = None
         self.usuario = None
+        self.anuncios = [];
+        self.resultado_pesquisa = [];
         self.sockFile = None
         
     def estabeleceConexao(self):
@@ -28,10 +31,150 @@ class ControladoraCliente():
                     sockFile = sock.makefile(mode='rw')
                     print("Conectado ao servidor")
                     self.sockFile = sockFile
+
+                    self.thread_escuta = threading.Thread(target=self.escuta_servidor)
+                    self.thread_escuta.start()
+
             except:
                 print(f"Tentando conectar ao servidor, tentativa {i + 1}/10...")
                 time.sleep(1)  # Espera 1 segundo antes de tentar novamente
     
+    def escuta_servidor(self):
+        
+
+        while True:
+            try:
+                resposta = self.sockFile.readline()
+                if resposta:
+                    dados = json.loads(resposta)
+                    print("Resposta do servidor: ", dados)
+                    
+                    match dados.get("comando"):
+                        case "criarLoja":
+                            idLoja = dados.get("idLoja")
+                            nomeLoja = dados.get("nomeLoja")
+                            descricaoLoja = dados.get("descricaoLoja")
+                            endereco = dados.get("endereco")
+                            self.loja = Loja(idLoja, self.usuario.idUser, nomeLoja, descricaoLoja, endereco)
+                        case "criarAnuncio":
+                            idProduto = dados.get("idProduto")
+                            categoria = dados.get("categoria")
+                            status = dados.get("status")
+                            idAnuncio = dados.get("idAnuncio")
+                            self.loja.anuncios.append(Anuncio(idProduto,categoria,status,idAnuncio))
+                        case "criarProduto":
+                            idProduto = dados.get("idProduto")
+                            nomeProduto = dados.get("nomeProduto")
+                            descricao = dados.get("descricao")
+                            preco = dados.get("preco")
+                            estoque = dados.get("estoque")
+                            self.loja.produtos.append(Produto(idProduto,nomeProduto,descricao,preco,estoque))
+                        case "cadastrarUsuario":
+                            idUsuario = dados.get("idUsuario")
+                            idCarrinho = dados.get("idCarrinho")
+                            nome = dados.get("nome")
+                            email = dados.get("email")
+                            senha = dados.get("senha")
+                            self.usuario.cadastrarUsuario(idUsuario,nome, email, senha, idCarrinho, TipoCliente.COMPRADOR)
+                            self.carrinho = Carrinho(idCarrinho)
+                        case "fazerLogin":
+                            status = dados.get("status")
+                            if status == "ok":
+                                self.usuario.fazerLogin(status)
+                            else:
+                                print("Tentativa falha de login")
+                        case "excluirLoja":
+                            self.loja.excluirLoja()
+                            self.loja = None
+                        case "excluirAnuncio":
+                            idAnuncio = dados.get("idAnuncio")
+                            self.loja.excluirAnuncio(idAnuncio)
+                        case "excluirProduto":
+                            idProduto = dados.get("idProduto")
+                            self.loja.excluirProduto(idProduto)
+                        case "alterarNomeLoja":
+                            nomeLoja = dados.get("nomeLoja")
+                            self.loja.alterarNome(nomeLoja)
+                        case "alterarEndereco":
+                            endereco = dados.get("endereco")
+                            self.loja.alterarEndereco(endereco)
+                        case "alterarDescricaoLoja":
+                            descricao = dados.get("descricao")
+                            self.loja.alterarDescricao(descricao)
+                        case "alterarCategoria":
+                            idAnuncio = dados.get("idAnuncio")
+                            categoria = dados.get("categoria")
+                            for anuncios in self.loja.anuncios:
+                                if idAnuncio == anuncios.idAnuncio:
+                                    anuncios.alterarCategoria(categoria)
+                        case "alterarStatus":
+                            idAnuncio = dados.get("idAnuncio")
+                            status = dados.get("status")
+                            for anuncios in self.loja.anuncios:
+                                if idAnuncio == anuncios.idAnuncio:
+                                    anuncios.alterarStatus(status)
+                        case "alterarProduto":
+                            idAnuncio = dados.get("idAnuncio")
+                            idProduto = dados.get("idProduto")
+                            for anuncios in self.loja.anuncios:
+                                if idAnuncio == anuncios.idAnuncio:
+                                    anuncios.alterarIdProduto(idProduto)
+                        case "alterarNomeProduto":
+                            idProduto = dados.get("idProduto")
+                            nome = dados.get("nome")
+                            for produtos in self.loja.produtos:
+                                if idProduto == produtos.idProduto:
+                                    produtos.alterarNome(nome)
+                        case "alterarDescricaoProduto":
+                            idProduto = dados.get("idProduto")
+                            descricaoProduto = dados.get("descricao")
+                            for produtos in self.loja.produtos:
+                                if idProduto == produtos.idProduto:
+                                    produtos.alterarDescricao(descricaoProduto)
+                        case "alterarPreco":
+                            idProduto = dados.get("idProduto")
+                            preco = dados.get("preco")
+                            for produtos in self.loja.produtos:
+                                if idProduto == produtos.idProduto:
+                                    produtos.alterarPreco(preco)
+                        case "alterarEstoque":
+                            idProduto = dados.get("idProduto")
+                            estoque = dados.get("estoque")
+                            for produtos in self.loja.produtos:
+                                if idProduto == produtos.idProduto:
+                                    produtos.alterarEstoque(estoque)
+                        case "adicionarItem":
+                            idItem = dados.get("idItem")
+                            precoProduto = dados.get("preco")
+                            idProduto = dados.get("idProduto")
+                            quantidade = dados.get("quantidade")
+                            self.carrinho.adicionarItem(idProduto,precoProduto,quantidade, idItem)
+                        case "alterarQuantidade":
+                            idItem = dados.get("idItem")
+                            quantidade = dados.get("quantidade")
+                            self.carrinho.alterarQuantidade(quantidade,idItem)
+                        case "fecharCarrinho":
+                            codigo = dados.get("codigo")
+                            if codigo == 200:
+                                self.carrinho.fecharCarrinho()
+                            else:
+                                print("Não é possível fechar esse carrinho")
+                        case "recuperaAnuncios":
+                            anuncios = dados.get("anuncios")
+                            self.anuncios.clear()
+                            for anuncio in anuncios:
+                                idProduto = anuncio.get("idProduto")
+                                categoria = anuncio.get("categoria")
+                                status = anuncio.get("status")
+                                idAnuncio = anuncio.get("idAnuncio")
+                                self.anuncios.append(Anuncio(idProduto,categoria,status,idAnuncio))
+                        case _:
+                            print("Comando desconhecido recebido do servidor.")
+                    
+            except Exception as e:
+                print(f"Erro ao escutar o servidor: {e}")
+                break
+
     def criarLoja(self, nomeLoja: str, descricaoLoja: str, endereco: str):
         try:
             payload = {

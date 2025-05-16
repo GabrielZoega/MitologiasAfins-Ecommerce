@@ -11,6 +11,12 @@ from paginas.PaginaInicial import *
 from paginas.PaginaCarrinho import *
 from paginas.PaginaCriarLoja import *
 from paginas.PaginaEditarLoja import *
+from paginas.PaginaAnuncio import *
+from paginas.PaginaEditarAnuncios import *
+from paginas.PaginaEditarAnuncio import *
+from paginas.PaginaPesquisa import *
+
+from ControladoraCliente import ControladoraCliente
 
 PAGINA_LOGIN = 0
 PAGINA_CADASTRO = 1
@@ -18,11 +24,18 @@ PAGINA_INICIAL = 2
 PAGINA_CARRINHO = 3
 PAGINA_CRIAR_LOJA = 4
 PAGINA_EDITAR_LOJA = 5
+PAGINA_ANUNCIO = 6
+PAGINA_EDITAR_ANUNCIO = 7
+PAGINA_EDITAR_ANUNCIOS = 8
+PAGINA_PESQUISA = 9
 
 class MainWindow(QMainWindow):
     
-    def __init__(self):
+    def __init__(self, cliente: ControladoraCliente):
         super().__init__()
+
+        self.cliente = cliente
+
 
         self.setWindowTitle("Mitologias&Afins")
         self.resize(QSize(960, 540))
@@ -69,19 +82,27 @@ class MainWindow(QMainWindow):
         toolbar.addAction(self.action_ir_pagina_editar_loja)
 
         # adiciona as paginas na pilha de widgets
-        self.pagina_login = PaginaLogin(self.paginas)
-        self.pagina_cadastro = PaginaCadastro()
-        self.pagina_inicial = PaginaInicial(self.paginas)
-        self.pagina_carrinho = PaginaCarrinho(self.paginas)
-        self.pagina_criar_loja = PaginaCriarLoja()
-        self.pagina_editar_loja = PaginaEditarLoja()
+        self.pagina_login = PaginaLogin(paginas=self.paginas, cliente=self.cliente)
+        self.pagina_inicial = PaginaInicial(paginas=self.paginas, cliente=self.cliente)
+        # self.pagina_anuncio = PaginaAnuncio(paginas=self.paginas, cliente=self.cliente)
+        self.pagina_cadastro = PaginaCadastro(paginas=self.paginas, cliente=self.cliente)
+        self.pagina_carrinho = PaginaCarrinho(paginas=self.paginas, cliente=self.cliente)
+        self.pagina_pesquisa = PaginaPesquisa(paginas=self.paginas, cliente=self.cliente)
+        self.pagina_criar_loja = PaginaCriarLoja(paginas=self.paginas, cliente=self.cliente)
+        self.pagina_editar_loja = PaginaEditarLoja(paginas=self.paginas, cliente=self.cliente)
+        # self.pagina_editar_anuncio = PaginaEditarAnuncio(paginas=self.paginas, cliente=self.cliente)
+        self.pagina_editar_anuncios = PaginaEditarAnuncios(paginas=self.paginas, cliente=self.cliente)
 
-        self.paginas.addWidget(self.pagina_login)       # 0
-        self.paginas.addWidget(self.pagina_cadastro)    # 1
-        self.paginas.addWidget(self.pagina_inicial)     # 2
-        self.paginas.addWidget(self.pagina_carrinho)    # 3
-        self.paginas.addWidget(self.pagina_criar_loja)  # 4
-        self.paginas.addWidget(self.pagina_editar_loja) # 5
+        self.paginas.addWidget(self.pagina_login)           # 0
+        self.paginas.addWidget(self.pagina_cadastro)        # 1
+        self.paginas.addWidget(self.pagina_inicial)         # 2
+        self.paginas.addWidget(self.pagina_carrinho)        # 3
+        self.paginas.addWidget(self.pagina_criar_loja)      # 4
+        self.paginas.addWidget(self.pagina_editar_loja)     # 5
+        # self.paginas.addWidget(self.pagina_anuncio)         # 6
+        # self.paginas.addWidget(self.pagina_editar_anuncio)  # 7
+        self.paginas.addWidget(self.pagina_editar_anuncios) # 8
+        self.paginas.addWidget(self.pagina_pesquisa)        # 9
 
         self.setCentralWidget(self.paginas)  
         self.paginas.setCurrentIndex(2)     
@@ -114,10 +135,5 @@ class MainWindow(QMainWindow):
         self.paginas.setCurrentIndex(PAGINA_EDITAR_LOJA)
 
         
-app = QApplication(sys.argv)
 
-window = MainWindow()
-window.show()
-
-app.exec()
 
