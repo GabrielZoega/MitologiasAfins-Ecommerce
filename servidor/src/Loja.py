@@ -5,7 +5,7 @@ from Produto import Produto
 class Loja:
     
     def __init__(self, nome: str, endereco: str, descricao: str, idUsuario: int):
-        self.idLoja = 0
+        self.idLoja = None
         self.nome = nome
         self.endereco = endereco
         self.descricao = descricao
@@ -20,12 +20,12 @@ class Loja:
             VALUES (?, ?, ?)
         """, (self.nome, self.endereco, self.descricao))
         
-        banco.cur.execute("UPDATE usuario SET FK_lojaUser = ? WHERE idUsuario = ?", (self.idLoja, self.idUsuario))
-        banco.cur.execute("UPDATE usuario SET tipoUsuario = ? WHERE idUsuario = ?", ('VENDEDOR', self.idUsuario))
-        
         banco.cur.execute("SELECT idLoja FROM loja WHERE nomeLoja = ?", (self.nome,))
         result = banco.cur.fetchone()
         self.idLoja = result[0]
+
+        banco.cur.execute("UPDATE usuario SET FK_lojaUser = ? WHERE idUsuario = ?", (self.idLoja, self.idUsuario))
+        banco.cur.execute("UPDATE usuario SET tipoUsuario = ? WHERE idUsuario = ?", ('VENDEDOR', self.idUsuario))
         
         banco.con.commit()
     
@@ -56,4 +56,3 @@ class Loja:
     def alterarDescricaoLoja(self, descricao: str, banco: AcessoBanco):
         banco.cur.execute("UPDATE loja SET descricaoLoja = ? WHERE idLoja = ?", (descricao, self.idLoja))
         banco.con.commit()
-    

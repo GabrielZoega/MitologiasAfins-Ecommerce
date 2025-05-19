@@ -4,7 +4,7 @@ class Carrinho():
     def __init__(self,idCarrinho:int):
         self.itens = []
         self.idCarrinho = idCarrinho
-#       self.total = 0.0
+        self.total = 0.0
         
     def adicionarItem (self, idProduto:int, precoItem:float,quantidade:int,idItem:int):
         self.itens.append(Item(idProduto,precoItem,idItem,quantidade))

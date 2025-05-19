@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     tipoUsuario TEXT NOT NULL CHECK (tipoUsuario IN ('VENDEDOR', 'COMPRADOR')),
     FK_lojaUser INTEGER,
     FK_carrinho INTEGER NOT NULL,
-    FOREIGN KEY (FK_lojaUser) REFERENCES loja (idLoja)
+    FOREIGN KEY (FK_lojaUser) REFERENCES loja (idLoja),
     FOREIGN KEY (FK_carrinho) REFERENCES carrinho (idCarrinho)
 );
 
@@ -33,7 +33,15 @@ CREATE TABLE IF NOT EXISTS loja (
 
 CREATE TABLE IF NOT EXISTS anuncio (
     idAnuncio INTEGER PRIMARY KEY AUTOINCREMENT,
-    categoria TEXT NOT NULL CHECK (categoria IN ('TESTE')),
+    categoria TEXT NOT NULL CHECK (categoria IN (
+        'FOLCLORE_BRASILEIRO',
+        'MITOLOGIA_GREGA',
+        'MITOLOGIA_ROMANA',
+        'MITOLOGIA_NORDICA',
+        'MITOLOGIA_EGIPCIA',
+        'MITOLOGIA_CELTA',
+        'OUTRO'
+    )),
     statusAnuncio TEXT NOT NULL CHECK (statusAnuncio IN ('ATIVO', 'PAUSADO')),
     FK_idProduto INTEGER NOT NULL UNIQUE,
     FK_idLoja INTEGER NOT NULL,

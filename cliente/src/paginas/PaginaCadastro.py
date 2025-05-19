@@ -53,7 +53,7 @@ class PaginaCadastro(QWidget):
 
         # botao de cadastro
         cadastro_botao = QPushButton("Cadastrar")
-        cadastro_botao.clicked.connect(self.confere_cadastro)
+        cadastro_botao.clicked.connect(self.realiza_cadastro)
 
         # status do login
         self.status_label = QLabel("")
@@ -76,5 +76,14 @@ class PaginaCadastro(QWidget):
         # define o layout principal para o widget
         self.setLayout(main_layout)
 
-    def confere_cadastro(self):
-        return
+    def realiza_cadastro(self):
+        email = self.email_input.text()
+        senha = self.senha_input.text()
+        nome = self.nome_input.text()
+
+        if not email or not senha or not nome:
+            self.status_label.setText("Por favor, preencha todos os campos.")
+            return
+
+        self.cliente.cadastrarUsuario(nome, email, senha)
+        self.paginas.setCurrentIndex(self.paginas.PAGINA_INICIAL)

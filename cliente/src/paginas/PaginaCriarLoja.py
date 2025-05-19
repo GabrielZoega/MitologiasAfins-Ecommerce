@@ -12,6 +12,8 @@ class PaginaCriarLoja(QWidget):
         super().__init__()
         self.paginas = paginas
         self.cliente = cliente
+        self.cliente.loja_criada.connect(self.respostaCriarLoja)
+        self.cliente.login_validado.connect(self.respostaLogin)
         self.criaPagina()
         
 
@@ -52,7 +54,7 @@ class PaginaCriarLoja(QWidget):
 
         # botao de criar loja
         criar_loja_botao = QPushButton("Criar Loja")
-        # criar_loja_botao.clicked.connect()
+        criar_loja_botao.clicked.connect(self.criarLoja)
 
         # status da criacao da loja
         self.status_label = QLabel("")
@@ -75,3 +77,35 @@ class PaginaCriarLoja(QWidget):
         # define o layout principal para o widget
         self.setLayout(main_layout)
 
+    def criarLoja(self):
+        if self.cliente.usuario.tipoCliente == "VENDEDOR":
+            self.status_label.setText("Você já possui uma loja.")
+            return
+        elif self.cliente.usuario.idUser == None:
+            self.status_label.setText("Você não está logado.")
+            return
+
+
+        nome = self.nome_input.text()
+        descricao = self.descricao_input.text()
+        endereco = self.endereco_input.text()
+
+        if not nome or not descricao or not endereco:
+            self.status_label.setText("Por favor, preencha todos os campos.")
+            return
+    
+        self.cliente.criarLoja(nome, descricao, endereco)
+
+    def respostaCriarLoja(self, resposta):
+        if resposta:
+            self.status_label.setText("Loja criada com sucesso!")
+            self.cliente.fazerLogin(self.cliente.usuario.email, self.cliente.usuario.senha)
+            self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_LOJA)
+        else:
+            self.status_label.setText("Erro ao criar loja.")
+
+    def respostaLogin(self, sucesso: bool, resposta: str):
+        if sucesso:
+            self.status_label.setText("Login realizado com sucesso!")
+            self.cliente.recuperaLoja(self.cliente.usuario.idLoja, self.cliente.usuario.idUser)
+        

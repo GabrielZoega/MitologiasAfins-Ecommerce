@@ -3,11 +3,12 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout, QScrollArea
 from PyQt6.QtCore import Qt
 from paginas.GridAnuncios import *
 from paginas.MenuOpcoes import *
 from ControladoraCliente import *
+from TipoCliente import TipoCliente
 
 class PaginaInicial(QWidget):
     def __init__(self, paginas: QStackedWidget, cliente: ControladoraCliente):
@@ -42,11 +43,16 @@ class PaginaInicial(QWidget):
         barra_pesquisa_layout.addWidget(pesquisa_botao)
 
         # anuncios
-        anuncios_grid = GridAnuncios(paginas=self.paginas, tipo_usuario="Cliente", cliente=self.cliente)
+        anuncios_grid = GridAnuncios(paginas=self.paginas, tipo_usuario=TipoCliente.COMPRADOR, cliente=self.cliente)
+
+        # Torna a grid scrollável
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(anuncios_grid)
 
         # centro da pagina
         centro_layout.addLayout(barra_pesquisa_layout)
-        centro_layout.addWidget(anuncios_grid)
+        centro_layout.addWidget(scroll_area)  # Adicione o scroll_area, não o anuncios_grid diretamente
         
         # adiciona os widgets ao layout da pagina
         main_layout.addWidget(menu)

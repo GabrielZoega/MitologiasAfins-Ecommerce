@@ -16,9 +16,9 @@ class Produto:
             VALUES (?, ?, ?, ?, ?)
         """, (self.nome, self.descricao, self.preco, self.estoque, self.idLoja))
         
-        banco.cur.execute("SELECT idProduto FROM produto WHERE nomeProduto = ?", (self.nome))
+        banco.cur.execute("SELECT idProduto FROM produto WHERE nomeProduto = ?", (self.nome,))
         result = banco.cur.fetchone()
-        self.idLoja = result[0]
+        self.idProduto = result[0]
         
         banco.con.commit()
         

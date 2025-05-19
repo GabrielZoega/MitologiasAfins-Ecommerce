@@ -12,6 +12,7 @@ class PaginaLogin(QWidget):
         super().__init__()
         self.paginas = paginas
         self.cliente = cliente
+        self.cliente.login_validado.connect(self.responde_login)
         self.criaPagina()
         
 
@@ -48,6 +49,14 @@ class PaginaLogin(QWidget):
         login_botao = QPushButton("Login")
         login_botao.clicked.connect(self.confere_login)
 
+        # label de cadastro
+        cadastro_label = QLabel("Não possui cadastro?")
+        cadastro_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # botao de cadastro
+        cadastro_botao = QPushButton("Cadastrar")
+        cadastro_botao.clicked.connect(lambda: self.paginas.setCurrentIndex(self.paginas.PAGINA_CADASTRO))
+
         # status do login
         self.status_label = QLabel("")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -57,6 +66,9 @@ class PaginaLogin(QWidget):
         form_layout.addLayout(email_layout)
         form_layout.addLayout(senha_layout)
         form_layout.addWidget(login_botao)
+        form_layout.addWidget(cadastro_label)
+        form_layout.addWidget(cadastro_botao)
+        # adiciona o label de status
         form_layout.addWidget(self.status_label)
 
         # adiciona o layout do formulario ao layout principal
@@ -69,7 +81,23 @@ class PaginaLogin(QWidget):
         self.setLayout(main_layout)
 
     def confere_login(self):
-        if self.email_input.text() == "teste@teste.com" and self.senha_input.text() == "senha":
-            self.paginas.setCurrentIndex(2)  # Muda para a HomePage
+        self.status_label.setText("Tentando fazer login...")
+        print(self.email_input.text(), self.senha_input.text())
+        self.cliente.fazerLogin(self.email_input.text(), self.senha_input.text())
+
+    def responde_login(self, sucesso: bool, mensagem: str):
+        self.status_label.setText(mensagem)
+        if sucesso:
+            self.cliente.recuperaAnuncios()
+            self.cliente.recuperaProdutos()
+            self.cliente.recuperaCarrinho(self.cliente.usuario.idUser)
+            self.cliente.recuperaItens(self.cliente.usuario.idCarrinho)
+            self.paginas.setCurrentIndex(self.paginas.PAGINA_INICIAL)
+            if self.cliente.usuario.idLoja is not None:
+                print(f"Recuperando loja -> {self.cliente.usuario.idLoja}")
+                self.cliente.recuperaLoja(self.cliente.usuario.idLoja, self.cliente.usuario.idUser)
+                self.cliente.recuperaAnunciosUser(self.cliente.usuario.idLoja)
+                print("Recuperando produtos da loja 1")
+                self.cliente.recuperaProdutosUser(self.cliente.usuario.idLoja)
         else:
-            self.status_label.setText("Tente novamente")
+            return

@@ -20,8 +20,9 @@ class AcessoBanco:
         return self.con.cursor()
     
     def cadastrarUsuario(self, nome: str, email: str, senha: str, idCarrinho: int):
+        print(f"Nome: {nome}, Email: {email}, Senha: {senha}, idCarrinho: {idCarrinho}")
         self.cur.execute("""
-            INSERT INTO usuario (nomeUsuario, email, senha, FK_carrinho, tipoUsuario)"
+            INSERT INTO usuario (nomeUsuario, email, senha, FK_carrinho, tipoUsuario)
             VALUES (?, ?, ?, ?, ?)
         """, (nome, email, senha, idCarrinho, 'COMPRADOR'))
         
@@ -30,12 +31,25 @@ class AcessoBanco:
         self.con.commit()
         return fetch[0]
 
-    def recuperaLogin(self, idUser: int):
-        self.cur.execute("SELECT email, senha FROM usuario WHERE idUsuario = ?", (idUser))
+    def recuperaLogin(self, email: str):
+        self.cur.execute("SELECT idUsuario, nomeUsuario ,email, senha, tipoUsuario, FK_lojaUser, FK_carrinho FROM usuario WHERE email = ?", (email,))
         result = self.cur.fetchone()
+        if result is None:
+            print("RecuperaLogin: Nenhum resultado encontrado")
+            return None
         self.con.commit()
-        email, senha = result
-        return email, senha
+        idUsuario, nome ,email, senha, tipoUsuario, FK_lojaUser, FK_carrinho = result
+    
+        return idUsuario, nome ,email, senha, tipoUsuario, FK_lojaUser, FK_carrinho
+
+    def recuperaLoja(self, idLoja):
+        self.cur.execute("SELECT nomeLoja, endereco, descricaoLoja FROM loja WHERE idLoja = ?", (idLoja,))
+        resposta = self.cur.fetchone()
+        if not resposta:
+            return None, None, None
+        nomeLoja, endereco, descricaoLoja = resposta
+        
+        return nomeLoja, endereco, descricaoLoja
 
     def criarCarrinho(self):
         self.cur.execute("INSERT INTO carrinho (total) VALUES (?)", (0,))
@@ -45,7 +59,7 @@ class AcessoBanco:
 
     def adicionarItem(self, idCarrinho: int, idProduto: int, quantidade: int):
         self.cur.execute("""
-            INSERT INTO item (FK_idCarrinho, FK_produto, quantidade)"
+            INSERT INTO item (FK_idCarrinho, FK_produto, quantidade)
             VALUES (?, ?, ?)
         """, (idCarrinho, idProduto, quantidade))
         idItem = self.cur.lastrowid
@@ -70,3 +84,4 @@ class AcessoBanco:
         else:
             self.cur.execute("UPDATE item SET quantidade = ? WHERE idItem = ?", (quantidade, idItem))
         self.con.commit()
+

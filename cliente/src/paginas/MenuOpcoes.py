@@ -6,6 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
 from PyQt6.QtCore import Qt
 from ControladoraCliente import *
+from Categoria import Categoria
 
 class MenuOpcoes(QWidget):
     def __init__(self, paginas: QStackedWidget, cliente: ControladoraCliente):
@@ -17,19 +18,14 @@ class MenuOpcoes(QWidget):
     def criaMenu(self):
 
         main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # opcoes do menu
-        categoria1 = QPushButton("Mitologia Egípcia")
-        # categoria1.clicked.connect()
+        categoria_botoes = []
+        for categoria in Categoria:
+            categoria_botoes.append(QPushButton(categoria.value))
 
-        categoria2 = QPushButton("Folclore Brasileiro")
-        # categoria2.clicked.connect()
-
-        categoria3 = QPushButton("Mitologia Grega")
-        # categoria3.clicked.connect()
-
-        main_layout.addWidget(categoria1)
-        main_layout.addWidget(categoria2)
-        main_layout.addWidget(categoria3)
+        for botao in categoria_botoes:
+            main_layout.addWidget(botao)
 
         self.setLayout(main_layout)

@@ -28,14 +28,15 @@ class ControladoraServidor:
                     break # encerra a conexão
                 try:
                     payload = json.loads(linha)
+                    print(f"\n\nPayload recebido: {payload}\n\n")
                     resposta = self.comandos(payload)
                     self.fileCliente.write(json.dumps(resposta) + '\n')
                     self.fileCliente.flush()
                 except json.JSONDecodeError:
                     self.fileCliente.write(json.dumps({"status": "erro", "resposta": "JSON inválido"}) + '\n')
                     self.fileCliente.flush()
-        except Exception as e:
-            print(f"Erro com {self.addr}: {e}")
+        #except Exception as e:
+        #    print(f"Erro com {self.addr}: {e}")
         finally:                
             print(f"Cliente {self.addr} desconectado")
             self.socketCliente.close()
@@ -71,16 +72,20 @@ class ControladoraServidor:
 
             case "criarAnuncio":
                 categoria = parametros.get("categoria")
-                status = parametros.get("status")
+                statusAnuncio = parametros.get("statusAnuncio")
                 idLoja = self.loja.idLoja
                 idProduto = parametros.get("idProduto")
-                if categoria and status and idLoja and idProduto:
-                    response = self.criarAnuncio(categoria, status, idLoja, idProduto)
+                if categoria and statusAnuncio and idLoja and idProduto:
+                    response = self.criarAnuncio(categoria, statusAnuncio, idLoja, idProduto)
                     return{
                         "comando": "criarAnuncio",
                         "status": "ok",
                         "resposta": "Anúncio criado com sucesso",
-                        "idAnuncio": response
+                        "idAnuncio": response,
+                        "idLoja": idLoja,
+                        "idProduto": idProduto,
+                        "categoria": categoria,
+                        "statusAnuncio": statusAnuncio
                     }
                 else:
                     return{
@@ -90,18 +95,19 @@ class ControladoraServidor:
                     }
                     
             case "criarProduto":
-                nomeProduto = parametros.get("nome")
+                nomeProduto = parametros.get("nomeProduto")
                 descricao = parametros.get("descricao")
                 preco = parametros.get("preco")
                 estoque = parametros.get("estoque")
-                idLoja = self.loja.idLoja
-                if nomeProduto and descricao and preco and estoque and idLoja:
+                idLoja = parametros.get("idLoja")
+                if nomeProduto is not None and descricao is not None and preco is not None and estoque is not None and idLoja is not None:
                     response = self.criarProduto(nomeProduto, descricao, preco, estoque, idLoja)
                     return{
                         "comando": "criarProduto",
                         "status": "ok",
                         "resposta": "Produto criado com sucesso",
-                        "idProduto": response
+                        "idProduto": response,
+                        "idLoja": idLoja
                     }
                 else:
                     return{
@@ -114,6 +120,7 @@ class ControladoraServidor:
                 nomeUser = parametros.get("nome")
                 email = parametros.get("email")
                 senha = parametros.get("senha")
+                print(f"Nome: {nomeUser}, Email: {email}, Senha: {senha}")
                 if nomeUser and email and senha:
                     idUsuario, idCarrinho = self.cadastrarUsuario(nomeUser, email, senha)
                     return{
@@ -121,7 +128,10 @@ class ControladoraServidor:
                         "status": "ok",
                         "resposta": "Usuário cadastrado com sucesso",
                         "idUsuario": idUsuario,
-                        "idCarrinho": idCarrinho
+                        "idCarrinho": idCarrinho,
+                        "nome": nomeUser,
+                        "email": email,
+                        "senha": senha
                     }
                 else:
                     return {
@@ -131,16 +141,29 @@ class ControladoraServidor:
                     }
                     
             case "fazerLogin":
-                idUsuario = parametros.get("idUser")
                 email = parametros.get("email")
                 senha = parametros.get("senha")
-                if idUsuario and email and senha:
-                    response = self.fazerLogin(idUsuario, email, senha)
-                    if response == 200:
+                if email and senha:
+                    resultado = self.fazerLogin(email)
+                    if resultado[0] is None:
+                        return {
+                            "comando": "fazerLogin",
+                            "status": "erro",
+                            "resposta": "Usuário não cadastrado"
+                        }
+                    idUsuario, nome, emailBanco, senhaBanco, tipoUsuario, idLoja, idCarrinho = resultado
+                    if email == emailBanco and senha == senhaBanco:
                         return{
                             "comando": "fazerLogin",
                             "status": "ok",
-                            "resposta": "Usuário logado com sucesso"
+                            "resposta": "Usuário logado com sucesso",
+                            "idUsuario": idUsuario,
+                            "nome": nome,
+                            "email": emailBanco,
+                            "senha": senhaBanco,
+                            "tipoCliente": tipoUsuario,
+                            "idLoja": idLoja,
+                            "idCarrinho": idCarrinho
                         }
                     else:
                         return {
@@ -154,9 +177,78 @@ class ControladoraServidor:
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
+                    
+            case "recuperaLoja":
+                idLoja = parametros.get("idLoja")
+                idUsuario = parametros.get("idUsuario")
+                nomeLoja, endereco, descricaoLoja = self.recuperaLoja(idLoja, idUsuario)
+                if nomeLoja and endereco and descricaoLoja:
+                    return{
+                        "comando": "recuperaLoja",
+                        "status": "ok",
+                        "resposta": "Loja recuperada com sucesso",
+                        "idUsuario": idUsuario,
+                        "idLoja": idLoja,
+                        "nome": nomeLoja,
+                        "endereco": endereco,
+                        "descricao": descricaoLoja
+                    }
+                else:
+                    return {
+                        "comando": "recuperaLoja",
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
+                
+            case "recuperaProdutosUser":
+                idLoja = parametros.get("idLoja")
+                qntProdutos, idsProduto, nomesProduto, descricoesProduto, precos, estoques, idLoja = self.recuperaProdutosUser(idLoja)
+                if qntProdutos is not None and idsProduto is not None and nomesProduto is not None and descricoesProduto is not None and precos is not None and estoques is not None and idLoja is not None:
+                    return {
+                        "comando": "recuperaProdutosUser",
+                        "status": "ok",
+                        "resposta": "Produtos recuperados com sucesso",
+                        "qntProduto": qntProdutos,
+                        "idsProduto": idsProduto,
+                        "nomes": nomesProduto,
+                        "descricoes": descricoesProduto,
+                        "precos": precos,
+                        "estoques": estoques,
+                        "idLoja": idLoja
+                    }
+                else:
+                    return {
+                        "comando": "recuperaProdutosUser",
+                        "status": "erro",
+                        "resposta": "Parâmetros inválidos"
+                    }
             
+            case "recuperaAnunciosUser":
+                idLoja = parametros.get("idLoja")
+                qntAnuncios, idsAnuncio, categorias, statusAnuncio, idsProduto = self.recuperaAnunciosUser(idLoja)
+                print(f"idsproduto: {idsProduto}")
+                if qntAnuncios and idsAnuncio and categorias and statusAnuncio and idsProduto:
+                    return {
+                        "comando": "recuperaAnunciosUser",
+                        "status": "ok",
+                        "resposta": "Todos os anuncios do usuário foram recuperados",
+                        "qntAnuncio": qntAnuncios,
+                        "idsAnuncio": idsAnuncio,
+                        "categorias": categorias,
+                        "statusAnuncio": statusAnuncio,
+                        "idsProduto": idsProduto,
+                        "idLoja": idLoja
+                    }
+                else:
+                    return {
+                        "comando": "recuperaAnunciosUser",
+                        "status": "erro",
+                        "resposta": "Erro ao recuperar os anuncios do banco"
+                    }
+                
             case "excluirLoja":
-                self.excluirLoja(self.banco)
+                idLoja = parametros.get("idLoja")
+                self.excluirLoja(self.banco, idLoja)
                 return{
                     "comando": "excluirLoja",
                     "status": "ok",
@@ -169,7 +261,7 @@ class ControladoraServidor:
                     self.excluirAnuncio(idAnuncio, self.banco)
                     return{
                         "comando": "excluirAnuncio",
-                        "status": "erro",
+                        "status": "ok",
                         "resposta": "Anuncio excluído com sucesso"
                     }
                 else:
@@ -185,7 +277,7 @@ class ControladoraServidor:
                     self.excluirAnuncio(idProduto, self.banco)
                     return{
                         "comando": "excluirProduto",
-                        "status": "erro",
+                        "status": "ok",
                         "resposta": "Produto excluído com sucesso"
                     }
                 else:
@@ -196,13 +288,14 @@ class ControladoraServidor:
                     }
             
             case "alterarNomeLoja":
-                nomeLoja = parametros.get("nome")
+                nomeLoja = parametros.get("nomeLoja")
                 if nomeLoja:
                       self.alterarNomeLoja(nomeLoja)
                       return{
                           "comando": "alterarNomeLoja",
                           "status": "ok",
-                          "resposta": "Nome da loja alterado com sucesso"
+                          "resposta": "Nome da loja alterado com sucesso",
+                          "nomeLoja": nomeLoja
                       }
                 else:
                     return{
@@ -218,7 +311,8 @@ class ControladoraServidor:
                     return{
                         "comando": "alterarEndereco",
                         "status": "ok",
-                        "resposta": "Endereço da loja alterado com sucesso"
+                        "resposta": "Endereço da loja alterado com sucesso",
+                        "endereco": endereco
                     }
                 else:
                     return{
@@ -230,11 +324,12 @@ class ControladoraServidor:
             case "alterarDescricaoLoja":
                 descricaoLoja = parametros.get("descricao")
                 if descricaoLoja:
-                    self.alterarDescricaoLoja(descricao)
+                    self.alterarDescricaoLoja(descricaoLoja)
                     return{
                         "comando": "alterarDescricaoLoja",
                         "status": "ok",
-                        "resposta": "Descrição da Loja alterada com sucesso"
+                        "resposta": "Descrição da Loja alterada com sucesso",
+                        "descricao": descricaoLoja
                     }
                 else:
                     return{
@@ -245,13 +340,14 @@ class ControladoraServidor:
             
             case "alterarCategoria":
                 idAnuncio = parametros.get("idAnuncio")
-                categoria = parametros.get("categoria")
+                categoria = Categoria[parametros.get("categoria")]
                 if idAnuncio and categoria:
                     self.alterarCategoria(idAnuncio, categoria)
                     return{
                         "comando": "alterarCategoria",
                         "status": "ok",
-                        "resposta": "Categoria alterada com sucesso"
+                        "resposta": "Categoria alterada com sucesso",
+                        "categoria": categoria.value
                     }
                 else:
                     return{
@@ -262,13 +358,14 @@ class ControladoraServidor:
             
             case "alterarStatus":
                 idAnuncio = parametros.get("idAnuncio")
-                status = parametros.get("status")
-                if idAnuncio and status:
-                    self.alterarStatus(idAnuncio, status)
+                statusAnuncio = Status[parametros.get("statusAnuncio")]
+                if idAnuncio and statusAnuncio:
+                    self.alterarStatus(idAnuncio, statusAnuncio)
                     return{
                         "comando": "alterarStatus",
                         "status": "ok",
-                        "resposta": "Status alterado com sucesso"
+                        "resposta": "Status alterado com sucesso",
+                        "statusAnuncio": statusAnuncio.name
                     }
                 else:
                     return{
@@ -302,7 +399,8 @@ class ControladoraServidor:
                     return{
                         "comando": "alterarNomeProduto",
                         "status": "ok",
-                        "resposta": "O nome do produto foi alterado com sucesso"
+                        "resposta": "O nome do produto foi alterado com sucesso",
+                        "nome": nomeProduto
                     }
                 else:
                     return{
@@ -319,7 +417,8 @@ class ControladoraServidor:
                     return{
                         "comando": "alterarDescricaoProduto",
                         "status": "ok",
-                        "resposta": "Descrição do produto alterada com sucesso"
+                        "resposta": "Descrição do produto alterada com sucesso",
+                        "descricao": descricaoProduto
                     }
                 else:
                     return{
@@ -336,7 +435,8 @@ class ControladoraServidor:
                     return{
                         "comando": "alterarPreco",
                         "status": "ok",
-                        "resposta": "Preco do produto alterado com sucesso"
+                        "resposta": "Preco do produto alterado com sucesso",
+                        "preco": preco
                     }
                 else:
                     return{
@@ -353,7 +453,8 @@ class ControladoraServidor:
                     return{
                         "comando": "alterarEstoque",
                         "status": "ok",
-                        "resposta": "Estoque alterado com sucesso"
+                        "resposta": "Estoque alterado com sucesso",
+                        "estoque": estoque
                     }
                 else:
                     return{
@@ -423,10 +524,9 @@ class ControladoraServidor:
                         "status": "erro",
                         "resposta": "Parâmetros inválidos"
                     }
-            
             case "recuperaAnuncios":
-                qntAnuncios, idsAnuncio, categorias, status, idsProduto, idsLoja = self.recuperaAnuncios()
-                if qntAnuncios and idsAnuncio and categorias and status and idsProduto and idsLoja:
+                qntAnuncios, idsAnuncio, categorias, statusAnuncio, idsProduto, idsLoja = self.recuperaAnuncios()
+                if qntAnuncios is not None and idsAnuncio is not None and categorias is not None and statusAnuncio is not None and idsProduto is not None and idsLoja is not None:
                     return {
                         "comando": "recuperaAnuncios",
                         "status": "ok",
@@ -434,7 +534,7 @@ class ControladoraServidor:
                         "qntAnuncio": qntAnuncios,
                         "idsAnuncio": idsAnuncio,
                         "categorias": categorias,
-                        "status": status,
+                        "statusAnuncio": statusAnuncio,
                         "idsProduto": idsProduto,
                         "idsLoja": idsLoja 
                     }
@@ -444,6 +544,61 @@ class ControladoraServidor:
                         "status": "erro",
                         "resposta": "Erro ao recuperar os anuncios do banco"
                     }
+            
+            case "recuperaProdutos":
+                qntProdutos, idsProduto, nomes, descricoes, precos, estoques, idsLoja = self.recuperaProdutos()
+                if qntProdutos is not None and idsProduto is not None and nomes is not None and descricoes is not None and precos is not None and estoques is not None and idsLoja is not None:
+                    return {
+                        "comando": "recuperaProdutos",
+                        "status": "ok",
+                        "resposta": "Todos os produtos foram recuperados",
+                        "qntProduto": qntProdutos,
+                        "idsProduto": idsProduto,
+                        "nomes": nomes,
+                        "descricoes": descricoes,
+                        "precos": precos,
+                        "estoques": estoques,
+                        "idsLoja": idsLoja
+                    }
+                else:
+                    return {
+                        "comando": "recuperaProdutos",
+                        "status": "erro",
+                        "resposta": "Erro ao recuperar os Produtos do banco"
+                    }
+            
+            case "recuperaCarrinho":
+                idUsuario = parametros.get("idUsuario")
+                idCarrinho, total = self.recuperaCarrinho(idUsuario)            
+                if idCarrinho is not None:
+                    return{
+                        "comando": "recuperaCarrinho",
+                        "status": "ok",
+                        "resposta": "Carrinho recuperado com sucesso",
+                        "idCarrinho": idCarrinho,
+                        "total": total
+                    }
+                else:
+                    return {
+                        "comando": "recuperaCarrinho",
+                        "status": "erro",
+                        "resposta": "Erro ao recuperar o Carrinho do banco"
+                    }
+            
+            case "recuperaItens":
+                idCarrinho = parametros.get("idCarrinho")
+                qntItem, idsItem, idsProduto, quantidades = self.recuperaItens(idCarrinho)
+                # Sempre retorna status ok, mesmo se o carrinho estiver vazio
+                return {
+                    "comando": "recuperaItens",
+                    "status": "ok",
+                    "resposta": "Itens recuperados com sucesso",
+                    "qntItem": qntItem,
+                    "idsItem": idsItem,
+                    "idsProduto": idsProduto,
+                    "quantidades": quantidades
+                }
+            
             
             case _:
                 return {"status": "erro", "resposta": "Comando desconhecido"}
@@ -464,25 +619,22 @@ class ControladoraServidor:
     
     def criarProduto(self, nome: str, descricao: str, preco: float, estoque: int, idLoja: int):
         produto = Produto(nome, descricao, preco, estoque, idLoja)
-        self.produtos.append(produto)
+        # self.produtos.append(produto)
         self.loja.adicionaProduto(produto)
         produto.criarProdutoBanco(self.banco)
         return produto.idProduto
 
-    # Operações de Login e Cadastro
     def cadastrarUsuario(self, nome: str, email: str, senha: str):
         idCarrinho = self.banco.criarCarrinho()
         idUsuario = self.banco.cadastrarUsuario(nome, email, senha, idCarrinho)
         return idUsuario, idCarrinho
     
-    def fazerLogin(self, idUser: int, email: str, senha: str):
-        emailBanco, senhaBanco = self.banco.recuperaLogin(idUser)
-        
-        if (emailBanco == email and senhaBanco == senha):
-            return 200
-        else:
-            return 403
-    
+    def fazerLogin(self, email):
+        resultado = self.banco.recuperaLogin(email)
+        if resultado is None:
+            return None, None, None, None, None, None, None
+        idUsuario, nome, emailBanco, senhaBanco, tipoUsuario, idLoja, idCarrinho = resultado
+        return idUsuario, nome, emailBanco, senhaBanco, tipoUsuario, idLoja, idCarrinho
     
     # Operações de Edição da Loja:
     def alterarNomeLoja(self, nome: str):
@@ -500,71 +652,113 @@ class ControladoraServidor:
     
     # Operações de Edição do Anuncio
     def alterarCategoria(self, idAnuncio: int, categoria: Categoria):
-        for anuncio in self.loja.anuncios:
-            if anuncio.idAnuncio == idAnuncio:
-                anuncio.categoria = categoria
-                anuncio.alterarCategoria(categoria, self.banco)
+        print(f"Categoria: {categoria}")
+        self.banco.cur.execute("UPDATE anuncio SET categoria = ? WHERE idAnuncio = ?", (categoria.name, idAnuncio))
+        self.banco.con.commit()
+        # for anuncio in self.loja.anuncios:
+        #     if anuncio.idAnuncio == idAnuncio:
+        #         anuncio.categoria = categoria
+        #         anuncio.alterarCategoria(categoria, self.banco)
         
     def alterarStatus(self, idAnuncio: int, status: Status):
-        for anuncio in self.loja.anuncios:
-            if anuncio.idAnuncio == idAnuncio:
-                anuncio.status = status
-                anuncio.alterarStatus(status, self.banco)
+        print(f"Status: {status}")
+        self.banco.cur.execute("UPDATE anuncio SET statusAnuncio = ? WHERE idAnuncio = ?", (status.name, idAnuncio))
+        self.banco.con.commit()
+        # for anuncio in self.loja.anuncios:
+        #     if anuncio.idAnuncio == idAnuncio:
+        #         anuncio.status = status
+        #         anuncio.alterarStatus(status, self.banco)
     
     def alterarProduto(self, idAnuncio: int, idProduto: int):
-        for anuncio in self.loja.anuncios:
-            if anuncio.idAnuncio == idAnuncio:
-                anuncio.idProduto = idProduto
-                anuncio.alterarProduto(idProduto, self.banco)
+        self.banco.cur.execute("UPDATE anuncio SET FK_idProduto = ? WHERE idAnuncio = ?", (idProduto, idAnuncio))
+        self.banco.con.commit()
+        # for anuncio in self.loja.anuncios:
+        #     if anuncio.idAnuncio == idAnuncio:
+        #         anuncio.idProduto = idProduto
+        #         anuncio.alterarProduto(idProduto, self.banco)
 
 
-    # Operações de Edição do Produto
     def alterarNomeProduto(self, idProduto: int, nome: str):
-        for produto in self.loja.produtos:
-            if produto.idProduto == idProduto:
-                produto.nome = nome
-                produto.alterarProduto(nome, self.banco)
+        print(f"Nome: {nome}")
+        self.banco.cur.execute("UPDATE produto SET nomeProduto = ? WHERE idProduto = ?", (nome, idProduto))
+        self.banco.con.commit()
+        # for produto in self.loja.produtos:
+        #     if produto.idProduto == idProduto:
+        #         produto.nome = nome
+        #         produto.alterarProduto(nome, self.banco)
             
     def alterarDescricaoProduto(self, idProduto: int, descricao: str):
-        for produto in self.loja.produtos:
-            if produto.idProduto == idProduto:
-                produto.descricao = descricao
-                produto.alterarProduto(descricao, self.banco)
+        print(f"Descricao: {descricao}")
+        self.banco.cur.execute("UPDATE produto SET descricaoProduto = ? WHERE idProduto = ?", (descricao, idProduto))
+        self.banco.con.commit()
+        # for produto in self.loja.produtos:
+        #     if produto.idProduto == idProduto:
+        #         produto.descricao = descricao
+        #         produto.alterarProduto(descricao, self.banco)
                 
     def alterarPreco(self, idProduto: int, preco: float):
-        for produto in self.loja.produtos:
-            if produto.idProduto == idProduto:
-                produto.preco = preco
-                produto.alterarProduto(preco, self.banco)
+        print(f"Preco: {preco}")
+        self.banco.cur.execute("UPDATE produto SET preco = ? WHERE idProduto = ?", (preco, idProduto))
+        self.banco.con.commit()
+        # for produto in self.loja.produtos:
+        #     if produto.idProduto == idProduto:
+        #         produto.preco = preco
+        #         produto.alterarProduto(preco, self.banco)
                 
     def alterarEstoque(self, idProduto: int, estoque: int):
-        for produto in self.loja.produtos:
-            if produto.idProduto == idProduto:
-                produto.estoque = estoque
-                produto.alterarProduto(estoque, self.banco)
-    
-    
+        print(f"Estoque: {estoque}")
+        self.banco.cur.execute("UPDATE produto SET estoque = ? WHERE idProduto = ?", (estoque, idProduto))
+        self.banco.con.commit()
+        # for produto in self.loja.produtos:
+        #     if produto.idProduto == idProduto:
+        #         produto.estoque = estoque
+        #         produto.alterarProduto(estoque, self.banco)
+
+
     # Operações de Exclusão:
-    def excluirLoja(self, banco: AcessoBanco):
-        self.loja.excluirLoja(banco)
-        self.loja = None
+    def excluirLoja(self, banco: AcessoBanco, idLoja: int):
+        print(f"Excluindo loja: {idLoja}")
+        self.banco.cur.execute("SELECT idProduto FROM produto WHERE FK_Loja = ?", (idLoja,))
+        produtos = self.banco.cur.fetchall()
+        for produto in produtos:
+            idProduto = produto[0]
+            self.excluirProduto(idProduto, banco)
+        
+        self.banco.cur.execute("SELECT idAnuncio FROM anuncio WHERE FK_IDLoja = ?", (idLoja,))
+        anuncios = self.banco.cur.fetchall()
+        for anuncio in anuncios:
+            idAnuncio = anuncio[0]
+            self.excluirAnuncio(idAnuncio, banco)
+
+        self.banco.cur.execute("UPDATE usuario SET FK_Loja = NULL WHERE FK_Loja = ?", (idLoja,))
+        self.banco.cur.execute("UPDATE usuario SET tipoUsuario = ? WHERE FK_Loja = ?", ('COMPRADOR', idLoja))
+
+        self.banco.cur.execute("DELETE FROM loja WHERE idLoja = ?", (idLoja,))
+        self.banco.con.commit()
+
+        # self.loja.excluirLoja(banco)
+        # self.loja = None
     
     def excluirAnuncio(self, idAnuncio: int, banco: AcessoBanco):
-        for anuncio in self.loja.anuncios:
-            if anuncio.idAnuncio == idAnuncio:
-                anuncio.excluirAnuncio(banco)
-                self.loja.anuncios.remove(anuncio)
-                break
+        self.banco.cur.execute("DELETE FROM anuncio WHERE idAnuncio = ?", (idAnuncio,))
+        self.banco.con.commit()
+        # for anuncio in self.loja.anuncios:
+        #     if anuncio.idAnuncio == idAnuncio:
+        #         anuncio.excluirAnuncio(banco)
+        #         self.loja.anuncios.remove(anuncio)
+        #         break
     
     def excluirProduto(self, idProduto: int, banco: AcessoBanco):
-        for produto in self.loja.produtos:
-            if produto.idProduto == idProduto:
-                produto.excluirProduto(banco)
-                for anuncio in self.loja.anuncios:
-                    if anuncio.idProduto == idProduto:
-                        self.excluirAnuncio(anuncio.idAnuncio, banco)
-                self.loja.produtos.remove(produto)
-                break
+        self.banco.cur.execute("DELETE FROM produto WHERE idProduto = ?", (idProduto,))
+        self.banco.con.commit()
+        # for produto in self.loja.produtos:
+        #     if produto.idProduto == idProduto:
+        #         produto.excluirProduto(banco)
+        #         for anuncio in self.loja.anuncios:
+        #             if anuncio.idProduto == idProduto:
+        #                 self.excluirAnuncio(anuncio.idAnuncio, banco)
+        #         self.loja.produtos.remove(produto)
+        #         break
     
     
     # Funções de edição do carrinho
@@ -605,14 +799,14 @@ class ControladoraServidor:
         return 200
         
     
-    # Função responsável por iniciar o feed com os Anuncios
+
     def recuperaAnuncios(self):
         self.banco.cur.execute("SELECT * FROM anuncio")
         anunciosBanco = self.banco.cur.fetchall()
         qntAnuncios = 0
         idsAnuncio = []
         categorias = []
-        status = []
+        statusAnuncios = []
         idsProduto = []
         idsLoja = []
         
@@ -622,8 +816,117 @@ class ControladoraServidor:
             qntAnuncios += 1
             idsAnuncio.append(idAnuncio)
             categorias.append(categoria)
-            status.append(statusAnuncio)
+            statusAnuncios.append(statusAnuncio)
             idsProduto.append(idProduto)
             idsLoja.append(idLoja)
+
+        return qntAnuncios, idsAnuncio, categorias, statusAnuncios, idsProduto, idsLoja
+
+    def recuperaProdutos(self):
+        self.banco.cur.execute("SELECT * FROM produto")
+        produtosBanco = self.banco.cur.fetchall()
+        qntProdutos = 0
+        idsProduto = []
+        nomesProduto = []
+        descricoesProduto = []
+        precos = []
+        estoques = []
+        idsLoja = []
         
-        return qntAnuncios, idsAnuncio, categorias, status, idsProduto, idsLoja
+        
+        for produto in produtosBanco:
+            idProduto, nome, descricao, preco, estoque, idLoja = produto
+            qntProdutos += 1
+            idsProduto.append(idProduto)
+            nomesProduto.append(nome)
+            descricoesProduto.append(descricao)
+            precos.append(preco)
+            estoques.append(estoque)
+            idsLoja.append(idLoja)
+            
+        
+        return qntProdutos, idsProduto, nomesProduto, descricoesProduto, precos, estoques, idsLoja
+
+
+    def recuperaLoja(self, idLoja: int, idUsuario):
+        nomeLoja, endereco, descricaoLoja = self.banco.recuperaLoja(idLoja)
+        self.loja = Loja(nomeLoja, endereco, descricaoLoja, idUsuario)
+        self.loja.idLoja = idLoja
+        return nomeLoja, endereco, descricaoLoja
+    
+    
+    def recuperaProdutosUser(self, idLoja):
+        self.banco.cur.execute("SELECT * FROM produto WHERE FK_Loja = ?", (idLoja,))
+        produtosBanco = self.banco.cur.fetchall()
+        qntProdutos = 0
+        idsProduto = []
+        nomesProduto = []
+        descricoesProduto = []
+        precos = []
+        estoques = []
+        
+        
+        for produto in produtosBanco:
+            idProduto, nome, descricao, preco, estoque, idLoja = produto
+            qntProdutos += 1
+            idsProduto.append(idProduto)
+            nomesProduto.append(nome)
+            descricoesProduto.append(descricao)
+            precos.append(preco)
+            estoques.append(estoque)
+            
+        
+        return qntProdutos, idsProduto, nomesProduto, descricoesProduto, precos, estoques, idLoja
+    
+    def recuperaAnunciosUser(self, idLoja: int):
+        self.banco.cur.execute("SELECT * FROM anuncio WHERE FK_idLoja = ?", (idLoja,))
+        anunciosBanco = self.banco.cur.fetchall()
+        qntAnuncios = 0
+        idsAnuncio = []
+        categorias = []
+        status = []
+        idsProduto = []        
+        
+        for anuncio in anunciosBanco:
+            idAnuncio, categoria, statusAnuncio, idProduto, idLoja = anuncio
+            qntAnuncios += 1
+            idsAnuncio.append(idAnuncio)
+            categorias.append(categoria)
+            status.append(statusAnuncio)
+            idsProduto.append(idProduto)
+        
+        return qntAnuncios, idsAnuncio, categorias, status, idsProduto
+
+    def recuperaCarrinho(self, idUsuario):
+        self.banco.cur.execute("SELECT FK_carrinho FROM usuario WHERE idUsuario = ?", (idUsuario,))
+        result = self.banco.cur.fetchone()
+        if not result:
+            return None, 0
+        idCarrinho = result[0]
+
+        self.banco.cur.execute("SELECT total FROM carrinho WHERE idCarrinho = ?", (idCarrinho,))
+        carrinho = self.banco.cur.fetchone()
+        if not carrinho or carrinho[0] is None:
+            return idCarrinho, 0
+        total = carrinho[0]
+        return idCarrinho, total
+    
+    
+    def recuperaItens(self, idCarrinho):
+        if idCarrinho is None:
+            return 0, [], [], []
+        self.banco.cur.execute("SELECT * FROM item WHERE FK_idCarrinho = ?", (idCarrinho,))
+        itensBanco = self.banco.cur.fetchall()
+        qntItem = 0
+        idsItem = []
+        idsProduto = []
+        quantidades = []
+        
+        for item in itensBanco:
+            idItem, fk_idCarrinho, fk_produto, quantidade = item
+            qntItem += 1
+            idsItem.append(idItem)
+            idsProduto.append(fk_produto)
+            quantidades.append(quantidade)
+
+        return qntItem, idsItem, idsProduto, quantidades

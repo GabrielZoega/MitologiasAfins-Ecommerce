@@ -8,6 +8,7 @@ from PyQt6.QtCore import Qt
 from paginas.GridAnuncios import *
 from paginas.MenuOpcoes import *
 from ControladoraCliente import *
+from TipoCliente import TipoCliente
 
 class PaginaPesquisa(QWidget):
     def __init__(self, paginas: QStackedWidget, cliente: ControladoraCliente):
@@ -36,16 +37,18 @@ class PaginaPesquisa(QWidget):
         # barra de pesquisa
         self.pesquisa_input = QLineEdit()
         self.pesquisa_input.setPlaceholderText("Pesquise aqui...")
+        self.pesquisa_input.setFixedWidth(300) 
         pesquisa_botao = QPushButton("Pesquisar")
         # pesquisa_botao.clicked.connect()
         barra_pesquisa_layout.addWidget(self.pesquisa_input)
         barra_pesquisa_layout.addWidget(pesquisa_botao)
+        barra_pesquisa_layout.addStretch()      
 
         # label com resultado de pesquisa
         resultado_label = QLabel("Resultados para \"...\":")
 
         # anuncios
-        anuncios_grid = GridAnuncios(paginas=self.paginas, cliente=self.cliente, tipo_usuario="Normal")
+        anuncios_grid = GridAnuncios(paginas=self.paginas, cliente=self.cliente, tipo_usuario=TipoCliente.COMPRADOR)
 
         # centro da pagina
         centro_layout.addLayout(barra_pesquisa_layout)

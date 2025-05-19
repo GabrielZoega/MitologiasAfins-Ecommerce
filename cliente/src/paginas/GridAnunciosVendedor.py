@@ -13,7 +13,7 @@ from Produto import Produto
 from Anuncio import Anuncio
 from TipoCliente import TipoCliente
 
-class GridAnuncios(QWidget):
+class GridAnunciosVendedor(QWidget):
     def __init__(self, paginas: QStackedWidget, tipo_usuario: TipoCliente, cliente: ControladoraCliente):
         super().__init__()
         self.paginas = paginas
@@ -37,10 +37,8 @@ class GridAnuncios(QWidget):
         self.cliente.recuperaAnuncios()
 
     def atualizaAnuncios(self):
-        if self.tipo_usuario == TipoCliente.COMPRADOR:
-            # print("\nAtualizando anuncios comprador\n")
-            self.cliente.recuperaProdutos()
-
+        self.cliente.recuperaProdutos()
+    
     def atualizaProdutos(self):
         # print("Atualizando produtos")
         self.widgets_anuncios.clear()
@@ -54,26 +52,31 @@ class GridAnuncios(QWidget):
 
         # adiciona os anuncios ao layout
         # print(f"\n\n1 {self.tipo_usuario == TipoCliente.COMPRADOR}")
-        
-        anuncios = self.cliente.anuncios
-        produtos = self.cliente.produtos
-        for anuncio in anuncios:
-            produto = None
-            # print(f"3 {anuncio.status == Status.ATIVO}")
-            if anuncio.status == Status.ATIVO:
-                for p in produtos:
-                    if p.idProduto == anuncio.idProduto:
-                        produto = p
-                        break
+        if self.tipo_usuario == TipoCliente.VENDEDOR:
+            anuncios = self.cliente.anuncios
+            produtos = self.cliente.produtos
+            for anuncio in anuncios:
+                print(f"\n\n Anuncio.idLoja: {anuncio.idLoja}\nUsuario.idLoja: {self.cliente.usuario.idLoja}\n\n")
+                if anuncio.idLoja == self.cliente.usuario.idLoja:
+                    produto = None
+                    # print(f"3 {anuncio.status == Status.ATIVO}")
 
-            if produto is not None:
-                widget_anuncio = WidgetAnuncio(paginas=self.paginas, cliente=self.cliente, produto=produto, anuncio=anuncio, tipo_usuario=self.tipo_usuario)
-                self.widgets_anuncios.append(widget_anuncio)
-                self.main_layout.addWidget(widget_anuncio)
+                    for p in produtos:
+                        if p.idProduto == anuncio.idProduto:
+                            produto = p
+                            break
+
+                    if produto is not None:
+                        widget_anuncio = WidgetAnuncioVendedor(paginas=self.paginas, cliente=self.cliente, produto=produto, anuncio=anuncio, tipo_usuario=self.tipo_usuario)
+                        self.widgets_anuncios.append(widget_anuncio)
+                        self.main_layout.addWidget(widget_anuncio)
         
         
 
-class WidgetAnuncio(QWidget):
+    
+        
+
+class WidgetAnuncioVendedor(QWidget):
 
     def __init__(self, paginas: QStackedWidget, cliente: ControladoraCliente, produto: Produto, anuncio: Anuncio, tipo_usuario: TipoCliente):
         super().__init__()
@@ -117,8 +120,7 @@ class WidgetAnuncio(QWidget):
         self.setStyleSheet("background: rgba(0, 0, 0, 0.1);")
 
     def abreAnuncio(self):
-
-        self.pagina_anuncio = PaginaAnuncio(paginas=self.paginas, cliente=self.cliente, pagina_anterior=self.paginas.currentIndex(), produto=self.produto, anuncio=self.anuncio)
-        self.paginas.addWidget(self.pagina_anuncio) 
-        self.paginas.setCurrentIndex(self.paginas.PAGINA_ANUNCIO)
+        self.paginas.widget(self.paginas.PAGINA_EDITAR_ANUNCIO).setAnuncio(self.anuncio)
+        self.paginas.widget(self.paginas.PAGINA_EDITAR_ANUNCIO).setProduto(self.produto)
+        self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_ANUNCIO)
 
