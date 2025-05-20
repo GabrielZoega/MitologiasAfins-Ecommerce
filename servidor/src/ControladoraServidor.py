@@ -700,7 +700,7 @@ class ControladoraServidor:
         for produto in self.loja.produtos:
             if produto.idProduto == idProduto:
                 produto.preco = preco
-                produto.alterarProduto(preco, self.banco)
+                produto.alterarPreco(preco, self.banco)
                 
     def alterarEstoque(self, idProduto: int, estoque: int):
         print(f"Estoque: {estoque}")
