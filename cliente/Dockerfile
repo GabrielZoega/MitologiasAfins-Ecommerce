@@ -1,0 +1,43 @@
+FROM python:3.11-slim
+
+# Desabilitar bufferização da saída
+ENV PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get install -y \
+  libxcb-cursor0 \
+  libx11-xcb1 \
+  libxcb-icccm4 \
+  libxcb-image0 \
+  libxcb-keysyms1 \
+  libxcb-randr0 \
+  libxcb-render-util0 \
+  libxcb-shape0 \
+  libxcb-xkb1 \
+  libxkbcommon-x11-0 \
+  libxcb-xinerama0 \
+  libqt6gui6 \
+  libqt6widgets6 \
+  libqt6core6 \
+  libsm6 \
+  libxrender1 \
+  libxext6 \
+  libxi6 \
+  x11-utils \
+  --no-install-recommends && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
+
+ENV QT_X11_NO_MITSHM=1 
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN ls 
+
+COPY src/ ./src/
+
+#RUN chmod +x interface.py talvez isso aqui volte depois
+
+CMD ["python", "src/ClienteMain.py"] 
