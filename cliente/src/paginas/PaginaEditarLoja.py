@@ -145,6 +145,7 @@ class PaginaEditarLoja(QWidget):
 
     def excluirLoja(self):
         self.cliente.excluirLoja(self.cliente.loja.idLoja)
+        self.cliente.usuario.idLoja = None
 
     def respostaExclusaoLoja(self):
         self.paginas.setCurrentIndex(self.paginas.PAGINA_CRIAR_LOJA)

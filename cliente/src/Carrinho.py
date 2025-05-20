@@ -24,7 +24,7 @@ class Carrinho():
             for item in self.itens:
                 print(item)   
     
-    def calcularPrecoTotal(self): # percorre os itens do carrinho multiplicando o preço preço pela quantidade
+    def calcularPrecoTotal(self):
         for item in self.itens:
             total += item.precoItem * item.quantidadeCarrinho
         return total
@@ -40,6 +40,4 @@ class Carrinho():
     def fecharCarrinho(self,idCarrinho:int): 
         print(f"Preço total: {self.calcularPrecoTotal()}")
         self.itens = []
-        # mandar solicitação para o back para ver se todos os itens no carrinho estão disponiveis
-        # mandar para o back tirar os itens totais do estoque
         

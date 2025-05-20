@@ -7,7 +7,6 @@ from AcessoBanco import AcessoBanco
 import json
 
 # Iniciara o processamento da tarefa requerida pelo cliente
-# Para decidir a operação, poderiamos ter um campo no JSON com essa informação
 class ControladoraServidor:
     
     
@@ -16,7 +15,7 @@ class ControladoraServidor:
         self.addr = addr
         self.fileCliente = socketCliente.makefile(mode='rw')
         self.loja = None
-        
+                
     # vai controlar a execução
     def executa(self):
         self.banco = AcessoBanco()
@@ -42,7 +41,7 @@ class ControladoraServidor:
             self.socketCliente.close()
                     
     
-    # identifica e executa o comando passado (adicionar mais comandos)
+    # identifica e executa o comando enviado pelo cliente
     def comandos(self, payload):
         comando = payload.get("comando")
         parametros = payload.get("parametros", {})
@@ -588,7 +587,6 @@ class ControladoraServidor:
             case "recuperaItens":
                 idCarrinho = parametros.get("idCarrinho")
                 qntItem, idsItem, idsProduto, quantidades = self.recuperaItens(idCarrinho)
-                # Sempre retorna status ok, mesmo se o carrinho estiver vazio
                 return {
                     "comando": "recuperaItens",
                     "status": "ok",
@@ -619,7 +617,6 @@ class ControladoraServidor:
     
     def criarProduto(self, nome: str, descricao: str, preco: float, estoque: int, idLoja: int):
         produto = Produto(nome, descricao, preco, estoque, idLoja)
-        # self.produtos.append(produto)
         self.loja.adicionaProduto(produto)
         produto.criarProdutoBanco(self.banco)
         return produto.idProduto
@@ -655,64 +652,64 @@ class ControladoraServidor:
         print(f"Categoria: {categoria}")
         self.banco.cur.execute("UPDATE anuncio SET categoria = ? WHERE idAnuncio = ?", (categoria.name, idAnuncio))
         self.banco.con.commit()
-        # for anuncio in self.loja.anuncios:
-        #     if anuncio.idAnuncio == idAnuncio:
-        #         anuncio.categoria = categoria
-        #         anuncio.alterarCategoria(categoria, self.banco)
+        for anuncio in self.loja.anuncios:
+            if anuncio.idAnuncio == idAnuncio:
+                anuncio.categoria = categoria
+                anuncio.alterarCategoria(categoria, self.banco)
         
     def alterarStatus(self, idAnuncio: int, status: Status):
         print(f"Status: {status}")
         self.banco.cur.execute("UPDATE anuncio SET statusAnuncio = ? WHERE idAnuncio = ?", (status.name, idAnuncio))
         self.banco.con.commit()
-        # for anuncio in self.loja.anuncios:
-        #     if anuncio.idAnuncio == idAnuncio:
-        #         anuncio.status = status
-        #         anuncio.alterarStatus(status, self.banco)
+        for anuncio in self.loja.anuncios:
+            if anuncio.idAnuncio == idAnuncio:
+                anuncio.status = status
+                anuncio.alterarStatus(status, self.banco)
     
     def alterarProduto(self, idAnuncio: int, idProduto: int):
         self.banco.cur.execute("UPDATE anuncio SET FK_idProduto = ? WHERE idAnuncio = ?", (idProduto, idAnuncio))
         self.banco.con.commit()
-        # for anuncio in self.loja.anuncios:
-        #     if anuncio.idAnuncio == idAnuncio:
-        #         anuncio.idProduto = idProduto
-        #         anuncio.alterarProduto(idProduto, self.banco)
+        for anuncio in self.loja.anuncios:
+            if anuncio.idAnuncio == idAnuncio:
+                anuncio.idProduto = idProduto
+                anuncio.alterarProduto(idProduto, self.banco)
 
 
     def alterarNomeProduto(self, idProduto: int, nome: str):
         print(f"Nome: {nome}")
         self.banco.cur.execute("UPDATE produto SET nomeProduto = ? WHERE idProduto = ?", (nome, idProduto))
         self.banco.con.commit()
-        # for produto in self.loja.produtos:
-        #     if produto.idProduto == idProduto:
-        #         produto.nome = nome
-        #         produto.alterarProduto(nome, self.banco)
+        for produto in self.loja.produtos:
+            if produto.idProduto == idProduto:
+                produto.nome = nome
+                produto.alterarProduto(nome, self.banco)
             
     def alterarDescricaoProduto(self, idProduto: int, descricao: str):
         print(f"Descricao: {descricao}")
         self.banco.cur.execute("UPDATE produto SET descricaoProduto = ? WHERE idProduto = ?", (descricao, idProduto))
         self.banco.con.commit()
-        # for produto in self.loja.produtos:
-        #     if produto.idProduto == idProduto:
-        #         produto.descricao = descricao
-        #         produto.alterarProduto(descricao, self.banco)
+        for produto in self.loja.produtos:
+            if produto.idProduto == idProduto:
+                produto.descricao = descricao
+                produto.alterarProduto(descricao, self.banco)
                 
     def alterarPreco(self, idProduto: int, preco: float):
         print(f"Preco: {preco}")
         self.banco.cur.execute("UPDATE produto SET preco = ? WHERE idProduto = ?", (preco, idProduto))
         self.banco.con.commit()
-        # for produto in self.loja.produtos:
-        #     if produto.idProduto == idProduto:
-        #         produto.preco = preco
-        #         produto.alterarProduto(preco, self.banco)
+        for produto in self.loja.produtos:
+            if produto.idProduto == idProduto:
+                produto.preco = preco
+                produto.alterarProduto(preco, self.banco)
                 
     def alterarEstoque(self, idProduto: int, estoque: int):
         print(f"Estoque: {estoque}")
         self.banco.cur.execute("UPDATE produto SET estoque = ? WHERE idProduto = ?", (estoque, idProduto))
         self.banco.con.commit()
-        # for produto in self.loja.produtos:
-        #     if produto.idProduto == idProduto:
-        #         produto.estoque = estoque
-        #         produto.alterarProduto(estoque, self.banco)
+        for produto in self.loja.produtos:
+            if produto.idProduto == idProduto:
+                produto.estoque = estoque
+                produto.alterarProduto(estoque, self.banco)
 
 
     # Operações de Exclusão:
@@ -730,35 +727,35 @@ class ControladoraServidor:
             idAnuncio = anuncio[0]
             self.excluirAnuncio(idAnuncio, banco)
 
-        self.banco.cur.execute("UPDATE usuario SET FK_Loja = NULL WHERE FK_Loja = ?", (idLoja,))
-        self.banco.cur.execute("UPDATE usuario SET tipoUsuario = ? WHERE FK_Loja = ?", ('COMPRADOR', idLoja))
+        self.banco.cur.execute("UPDATE usuario SET FK_lojaUser = NULL WHERE FK_lojaUser = ?", (idLoja,))
+        self.banco.cur.execute("UPDATE usuario SET tipoUsuario = ? WHERE FK_lojaUser = ?", ('COMPRADOR', idLoja))
 
         self.banco.cur.execute("DELETE FROM loja WHERE idLoja = ?", (idLoja,))
         self.banco.con.commit()
 
-        # self.loja.excluirLoja(banco)
-        # self.loja = None
+        self.loja.excluirLoja(banco)
+        self.loja = None
     
     def excluirAnuncio(self, idAnuncio: int, banco: AcessoBanco):
         self.banco.cur.execute("DELETE FROM anuncio WHERE idAnuncio = ?", (idAnuncio,))
         self.banco.con.commit()
-        # for anuncio in self.loja.anuncios:
-        #     if anuncio.idAnuncio == idAnuncio:
-        #         anuncio.excluirAnuncio(banco)
-        #         self.loja.anuncios.remove(anuncio)
-        #         break
+        for anuncio in self.loja.anuncios:
+            if anuncio.idAnuncio == idAnuncio:
+                anuncio.excluirAnuncio(banco)
+                self.loja.anuncios.remove(anuncio)
+                break
     
     def excluirProduto(self, idProduto: int, banco: AcessoBanco):
         self.banco.cur.execute("DELETE FROM produto WHERE idProduto = ?", (idProduto,))
         self.banco.con.commit()
-        # for produto in self.loja.produtos:
-        #     if produto.idProduto == idProduto:
-        #         produto.excluirProduto(banco)
-        #         for anuncio in self.loja.anuncios:
-        #             if anuncio.idProduto == idProduto:
-        #                 self.excluirAnuncio(anuncio.idAnuncio, banco)
-        #         self.loja.produtos.remove(produto)
-        #         break
+        for produto in self.loja.produtos:
+            if produto.idProduto == idProduto:
+                produto.excluirProduto(banco)
+                for anuncio in self.loja.anuncios:
+                    if anuncio.idProduto == idProduto:
+                        self.excluirAnuncio(anuncio.idAnuncio, banco)
+                self.loja.produtos.remove(produto)
+                break
     
     
     # Funções de edição do carrinho
@@ -875,6 +872,10 @@ class ControladoraServidor:
             precos.append(preco)
             estoques.append(estoque)
             
+            newProduto = Produto(nome, descricao, preco, estoque, idLoja)
+            newProduto.idProduto = idProduto
+            self.loja.produtos.append(newProduto)
+            
         
         return qntProdutos, idsProduto, nomesProduto, descricoesProduto, precos, estoques, idLoja
     
@@ -894,6 +895,10 @@ class ControladoraServidor:
             categorias.append(categoria)
             status.append(statusAnuncio)
             idsProduto.append(idProduto)
+            
+            newAnuncio = Anuncio(idProduto, idLoja, categoria, status)
+            newAnuncio.idAnuncio = idAnuncio
+            self.loja.anuncios.append(newAnuncio)
         
         return qntAnuncios, idsAnuncio, categorias, status, idsProduto
 

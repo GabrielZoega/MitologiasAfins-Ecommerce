@@ -4,7 +4,7 @@ from Categoria import Categoria
 
 class Anuncio():
     def __init__(self, idProduto:int, categoria:Categoria, status: Status, idAnuncio:int, idLoja: int):
-        self.idProduto = idProduto # Não é produto para facilitar na hora de fazer exclusão
+        self.idProduto = idProduto
         self.categoria = categoria
         self.status = status
         self.idAnuncio = idAnuncio

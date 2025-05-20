@@ -107,5 +107,6 @@ class PaginaCriarLoja(QWidget):
     def respostaLogin(self, sucesso: bool, resposta: str):
         if sucesso:
             self.status_label.setText("Login realizado com sucesso!")
-            self.cliente.recuperaLoja(self.cliente.usuario.idLoja, self.cliente.usuario.idUser)
+            if self.cliente.usuario.idLoja is not None:
+                self.cliente.recuperaLoja(self.cliente.usuario.idLoja, self.cliente.usuario.idUser)
         

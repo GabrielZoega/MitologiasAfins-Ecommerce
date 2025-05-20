@@ -21,8 +21,7 @@ class EndPointServidor:
                 socketCliente, addr = servidor.accept()
                 print(f"Conexão de: {addr}")
                 
-                controladora = ControladoraServidor(socketCliente, addr)
-                thread = threading.Thread(target=controladora.executa)
+                thread = threading.Thread(target=ControladoraServidor(socketCliente, addr).executa())
                 thread.start()
         except Exception as e:
             print(f"Erro: {e}")

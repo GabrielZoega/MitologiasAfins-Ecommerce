@@ -84,7 +84,6 @@ class ControladoraCliente(QObject):
 
                             if status == "ok":
                                 self.usuario.tipoCliente = TipoCliente.VENDEDOR
-                                # self.recuperaLoja(idLoja, self.usuario.idUser)
                                 self.loja_criada.emit(True)
                             else:
                                 self.loja_criada.emit(False)
@@ -138,13 +137,12 @@ class ControladoraCliente(QObject):
                                 self.usuario.fazerLogin(idUsuario, nome, email, senha, idCarrinho, idLoja, TipoCliente[tipoCliente])
                                 # self.recuperaCarrinho(idUsuario)
                                 # self.recuperaItens(idCarrinho)
-                                # print(f"ID Loja: {idLoja}")
-                                # print(idLoja is not None)
-                                # if idLoja is not None:
-                                #     print("Recuperando loja")
-                                #     self.recuperaLoja(idLoja, idUsuario)
-                                #     self.recuperaProdutosUser(idLoja)
-                                #     self.recuperaAnunciosUser(idLoja)
+                                print(f"ID Loja: {idLoja}")
+                                if idLoja is not None:
+                                    print("Recuperando loja")
+                                    self.recuperaLoja(idLoja, idUsuario)
+                                    self.recuperaProdutosUser(idLoja)
+                                    self.recuperaAnunciosUser(idLoja)
                                 self.login_validado.emit(True, resposta)
                             else:
                                 print("Tentativa falha de login")
@@ -154,6 +152,7 @@ class ControladoraCliente(QObject):
                             self.usuario.tipoCliente = TipoCliente.COMPRADOR
                             self.loja.excluirLoja()
                             self.loja = None
+                            self.usuario.idLoja = None
                             self.loja_excluida.emit("Loja excluída com sucesso")
                             
                         case "excluirAnuncio":
@@ -393,12 +392,6 @@ class ControladoraCliente(QObject):
             self.sockFile.write(json.dumps(payload) + '\n')
             self.sockFile.flush()
             
-            # resposta = self.sockFile.readline()
-            # if resposta:
-            #     dados = json.loads(resposta)
-            #     print("Resposta: ", dados)
-            #     idLoja = dados.get("idLoja")
-            #     self.loja = Loja(idLoja, self.usuario.idUser, nomeLoja, descricaoLoja, endereco)
         except Exception as e:
             print(f"\n Erro: {e}")
             
@@ -415,12 +408,7 @@ class ControladoraCliente(QObject):
             }
             self.sockFile.write(json.dumps(payload) + '\n')
             self.sockFile.flush()       
-            # resposta = self.sockFile.readline()
-            # if resposta:
-            #     dados = json.loads(resposta)
-            #     print("Resposta: ", dados)
-            #     idAnuncio = dados.get("idAnuncio")
-            #     self.loja.anuncios.append(Anuncio(idProduto,categoria,status,idAnuncio))
+
         except Exception as e:
             print(f"\n Erro: {e}")
     
@@ -438,12 +426,7 @@ class ControladoraCliente(QObject):
             }
             self.sockFile.write(json.dumps(payload) + '\n')
             self.sockFile.flush()       
-            # resposta = self.sockFile.readline()
-            # if resposta:
-            #     dados = json.loads(resposta)
-            #     print("Resposta: ", dados)
-            #     idProduto = dados.get("idProduto")
-            #     self.loja.produtos.append(Produto(idProduto,nomeProduto,descricao,preco,estoque))
+
         except Exception as e:
             print(f"\n Erro: {e}")
             
@@ -459,14 +442,7 @@ class ControladoraCliente(QObject):
                 }
             self.sockFile.write(json.dumps(payload) + '\n')
             self.sockFile.flush()       
-            # resposta = self.sockFile.readline()
-            # if resposta:
-            #     dados = json.loads(resposta)
-            #     print("Resposta: ", dados)
-            #     idUsuario = dados.get("idUsuario")
-            #     idCarrinho = dados.get("idCarrinho")
-            #     self.usuario.cadastrarUsuario(idUsuario,nome, email, senha, idCarrinho, TipoCliente.COMPRADOR) #Verificar se está certo essa passagem de parâmetro
-            #     self.carrinho = Carrinho(idCarrinho)
+
         except Exception as e:
             print(f"\n Erro: {e}")
         
@@ -499,13 +475,6 @@ class ControladoraCliente(QObject):
             self.sockFile.write(json.dumps(payload) + '\n')
             self.sockFile.flush()
             print("Recuperando loja 3")
-            # resposta = self.sockFile.readline()
-            # dados = json.loads(resposta)
-            # if dados.get("status") == "ok":
-            #     nomeLoja = dados.get("nome")
-            #     endereco = dados.get("endereco")
-            #     descricaoLoja = dados.get("descricao")
-            #     self.loja = Loja(idLoja, idUsuario, nomeLoja, endereco, descricaoLoja)
             
         except Exception as e:
             print(f"Erro: {e}")
@@ -525,20 +494,6 @@ class ControladoraCliente(QObject):
             print("Recuperando produtos da loja 3")
             self.sockFile.flush()
             
-            # resposta = self.sockFile.readline()
-            # dados = json.loads(resposta)
-            # if dados.get("status") == "ok":
-            #     qntProdutos = dados.get("qntProduto")
-            #     idsProdutos = dados.get("idsProduto")
-            #     nomes = dados.get("nomes")
-            #     descricoes = dados.get("descricoes")
-            #     precos = dados.get("precos")
-            #     estoques = dados.get("estoques")
-                
-            #     for i in range (qntProdutos):
-            #         produto = Produto(idsProdutos[i], nomes[i], descricoes[i], precos[i], estoques[i], idLoja)
-            #         self.loja.produtos.append(produto)
-            
         except Exception as e:
             print(f"Erro: {e}")
 
@@ -554,19 +509,6 @@ class ControladoraCliente(QObject):
             self.sockFile.write(json.dumps(payload) + "\n")
             self.sockFile.flush()
             
-            # resposta = self.sockFile.readline()
-            # dados = json.loads(resposta)
-            # if dados.get("status") == "ok":
-            #     qntAnuncio = dados.get("qntAnuncio")
-            #     idsAnuncio = dados.get("idsAnuncio")
-            #     categorias = dados.get("categorias")
-            #     status = dados.get("status")
-            #     idsProduto = dados.get("idsProdutos")
-                
-            #     for i in range (qntAnuncio):
-            #         anuncio = Anuncio(idsProduto[i], categorias[i], status[i], idsAnuncio[i], idLoja)
-            #         self.loja.anuncios.append(anuncio)
-            
         except Exception as e:
             print(f"Erro: {e}")
     
@@ -580,16 +522,6 @@ class ControladoraCliente(QObject):
             }
             self.sockFile.write(json.dumps(payload) + "\n")
             self.sockFile.flush()
-            
-            # resposta = self.sockFile.readline()
-            # dados = json.loads(resposta)
-            # if dados.get("status") == "ok":
-            #     idCarrinho = dados.get("idCarrinho")
-            #     total = dados.get("total")
-                
-            #     carrinho = Carrinho(idCarrinho)
-            #     carrinho.total = total
-            #     self.carrinho = carrinho
             
         except Exception as e:
             print(f"Erro: {e}")
@@ -605,21 +537,6 @@ class ControladoraCliente(QObject):
             self.sockFile.write(json.dumps(payload) + "\n")
             self.sockFile.flush()
             
-            # resposta = self.sockFile.readline()
-            # dados = json.loads(resposta)
-            # if dados.get("status"):
-            #     qntItem = dados.get("qntItem")
-            #     idsItem = dados.get("idsItem")
-            #     idsProduto = dados.get("idsProduto")
-            #     quantidades = dados.get("quantidades")
-                
-            #     for i in range(qntItem):
-            #         for produto in self.produtos:
-            #             if produto.idProduto == idsProduto[i]:
-            #                 preco = produto.preco
-            #         item = Item(idsProduto[i], preco, idsItem[i], quantidades[i])
-            #         self.carrinho.itens.append(item)
-            
         except Exception as e:
             print(f"Erro: {e}")
     
@@ -633,12 +550,8 @@ class ControladoraCliente(QObject):
                     }
                 }
                 self.sockFile.write(json.dumps(payload) + '\n')
-                self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     self.loja.excluirLoja()
+                self.sockFile.flush()      
+
             except Exception as e:
                 print(f"\n Erro: {e}")
     
@@ -652,11 +565,6 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     self.loja.excluirAnuncio(idAnuncio)
                         
             except Exception as e:
                 print(f"\n Erro: {e}")
@@ -671,11 +579,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     self.loja.excluirProduto(idProduto)
+
             except Exception as e:
                 print(f"\n Erro: {e}")
 
@@ -689,11 +593,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     self.loja.alterarNome(nomeLoja)
+
             except Exception as e:
                 print(f"\n Erro: {e}")
 
@@ -707,11 +607,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     self.loja.alterarEndereco(endereco)
+
             except Exception as e:
                 print(f"\n Erro: {e}")
             
@@ -725,11 +621,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     self.loja.alterarDescricao(descricao)
+
             except Exception as e:
                 print(f"\n Erro: {e}")
 
@@ -744,13 +636,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     for anuncios in self.loja.anuncios:
-                #         if idAnuncio == anuncios.idAnuncio:
-                #             anuncios.alterarCategoria(categoria)
+
             except Exception as e:
                 print(f"\n Erro: {e}")
    
@@ -765,13 +651,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     for anuncios in self.loja.anuncios:
-                #         if idAnuncio == anuncios.idAnuncio:
-                #             anuncios.alterarStatus(status)
+
             except Exception as e:
                 print(f"\n Erro: {e}")         
 
@@ -786,13 +666,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     for anuncios in self.loja.anuncios:
-                #         if idAnuncio == anuncios.idAnuncio:
-                #             anuncios.alterarIdProduto(idProduto)
+
             except Exception as e:
                 print(f"\n Erro: {e}") 
 
@@ -807,13 +681,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     for produtos in self.loja.produtos:
-                #         if idProduto == produtos.idProduto:
-                #             produtos.alterarNome(nome)
+
             except Exception as e:
                 print(f"\n Erro: {e}")
     
@@ -828,13 +696,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     for produtos in self.loja.produtos:
-                #         if idProduto == produtos.idProduto:
-                #             produtos.alterarDescricao(descricaoProduto)
+
             except Exception as e:
                 print(f"\n Erro: {e}")
 
@@ -849,13 +711,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     for produtos in self.loja.produtos:
-                #         if idProduto == produtos.idProduto:
-                #             produtos.alterarPreco(preco)
+
             except Exception as e:
                 print(f"\n Erro: {e}")        
                 
@@ -870,13 +726,7 @@ class ControladoraCliente(QObject):
             }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     for produtos in self.loja.produtos:
-                #         if idProduto == produtos.idProduto:
-                #             produtos.alterarEstoque(estoque)
+
             except Exception as e:
                 print(f"\n Erro: {e}")
                 
@@ -892,13 +742,7 @@ class ControladoraCliente(QObject):
             }   
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     idItem = dados.get("idItem")
-                #     precoProduto = dados.get("preco")
-                #     self.carrinho.adicionarItem(idProduto,precoProduto,quantidade, idItem)
+
             except Exception as e:
                 print(f"\n Erro: {e}")
     
@@ -913,11 +757,7 @@ class ControladoraCliente(QObject):
             }   
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     self.carrinho.alterarQuantidade(quantidade,idItem)
+
             except Exception as e:
                 print(f"\n Erro: {e}")        
     
@@ -931,15 +771,7 @@ class ControladoraCliente(QObject):
                 }
                 self.sockFile.write(json.dumps(payload) + '\n')
                 self.sockFile.flush()       
-                # resposta = self.sockFile.readline()
-                # if resposta:
-                #     dados = json.loads(resposta)
-                #     print("Resposta: ", dados)
-                #     codigo = dados.get("codigo")
-                #     if codigo == 200:
-                #         self.carrinho.fecharCarrinho()
-                #     else:
-                #         print("Não é possível fechar esse carrinho")
+
             except Exception as e:
                 print(f"\n Erro: {e}")       
                       
@@ -950,12 +782,7 @@ class ControladoraCliente(QObject):
             }
             self.sockFile.write(json.dumps(payload) + '\n')
             self.sockFile.flush()       
-            # resposta = self.sockFile.readline()
-            # if resposta:
-            #     dados = json.loads(resposta)
-            #     print("Resposta: ", dados)
-            #     anuncios = dados.get("anuncios")
-            #     return anuncios
+
         except Exception as e:
             print(f"\n Erro: {e}")
             
@@ -967,21 +794,6 @@ class ControladoraCliente(QObject):
             }
             self.sockFile.write(json.dumps(payload) + "\n")
             self.sockFile.flush()
-            
-            # resposta = self.sockFile.readline()
-            # dados = json.loads(resposta)
-            # if dados.get("status") == "ok":
-            #     qntProdutos = dados.get("qntProduto")
-            #     idsProdutos = dados.get("idsProduto")
-            #     nomes = dados.get("nomes")
-            #     descricoes = dados.get("descricoes")
-            #     precos = dados.get("precos")
-            #     estoques = dados.get("estoques")
-            #     idsLoja = dados.get("idsLoja")
-                
-            #     for i in range (qntProdutos):
-            #         produto = Produto(idsProdutos[i], nomes[i], descricoes[i], precos[i], estoques[i], idsLoja[i])
-            #         self.produtos.append(produto)
             
         except Exception as e:
             print(f"Erro: {e}")
