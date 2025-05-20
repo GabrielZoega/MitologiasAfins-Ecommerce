@@ -56,7 +56,6 @@ class GridAnunciosVendedor(QWidget):
             anuncios = self.cliente.anuncios
             produtos = self.cliente.produtos
             for anuncio in anuncios:
-                print(f"\n\n Anuncio.idLoja: {anuncio.idLoja}\nUsuario.idLoja: {self.cliente.usuario.idLoja}\n\n")
                 if anuncio.idLoja == self.cliente.usuario.idLoja:
                     produto = None
                     # print(f"3 {anuncio.status == Status.ATIVO}")

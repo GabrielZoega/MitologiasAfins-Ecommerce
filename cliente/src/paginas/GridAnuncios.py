@@ -24,6 +24,7 @@ class GridAnuncios(QWidget):
         self.cliente.produtos_recuperados.connect(self.atualizaProdutos) 
         self.cliente.anuncio_criado.connect(self.atualizaAnuncios)
         self.cliente.anuncios_user_recuperados.connect(self.atualizaAnuncios)
+        self.pesquisa = None
         self.criaGrid()
         self.carrega_anuncios() 
 
@@ -71,7 +72,51 @@ class GridAnuncios(QWidget):
                 self.widgets_anuncios.append(widget_anuncio)
                 self.main_layout.addWidget(widget_anuncio)
         
+    def realizaPesquisa(self, pesquisaTipo: str, pesquisa: str):
+        self.widgets_anuncios.clear()
+
+        # retira todos os widgets do layout
+        while self.main_layout.count():
+            item = self.main_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)
+
+        # adiciona os anuncios ao layout
+        # print(f"\n\n1 {self.tipo_usuario == TipoCliente.COMPRADOR}")
         
+        anuncios = self.cliente.anuncios
+        produtos = self.cliente.produtos
+
+        produtos_pesquisados = []
+        anuncios_pesquisados = []
+        if pesquisaTipo == "normal":
+            anuncios_pesquisados = anuncios
+            for produto in produtos:
+                if pesquisa.lower() in produto.nome.lower():
+                    produtos_pesquisados.append(produto)
+        
+        elif pesquisaTipo == "categoria":
+            produtos_pesquisados = produtos
+            for anuncio in anuncios:
+                print(f"\n\n Anuncio.categoria: {Categoria[anuncio.categoria].value}\nPesquisa: {pesquisa}\n\n")
+                if pesquisa == Categoria[anuncio.categoria].value:
+                    anuncios_pesquisados.append(anuncio)
+        
+        
+        for anuncio in anuncios_pesquisados:
+            produto = None
+            # print(f"3 {anuncio.status == Status.ATIVO}")
+            if anuncio.status == Status.ATIVO:
+                for p in produtos_pesquisados:
+                    if p.idProduto == anuncio.idProduto:
+                        produto = p
+                        break
+
+            if produto is not None:
+                widget_anuncio = WidgetAnuncio(paginas=self.paginas, cliente=self.cliente, produto=produto, anuncio=anuncio, tipo_usuario=self.tipo_usuario)
+                self.widgets_anuncios.append(widget_anuncio)
+                self.main_layout.addWidget(widget_anuncio)
 
 class WidgetAnuncio(QWidget):
 
@@ -122,3 +167,4 @@ class WidgetAnuncio(QWidget):
         self.paginas.addWidget(self.pagina_anuncio) 
         self.paginas.setCurrentIndex(self.paginas.PAGINA_ANUNCIO)
 
+    

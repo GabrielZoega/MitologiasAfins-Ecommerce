@@ -36,23 +36,26 @@ class PaginaInicial(QWidget):
 
         # barra de pesquisa
         self.pesquisa_input = QLineEdit()
+        self.pesquisa_input.setFixedWidth(300) 
         self.pesquisa_input.setPlaceholderText("Pesquise aqui...")
         pesquisa_botao = QPushButton("Pesquisar")
-        # pesquisa_botao.clicked.connect()
+        pesquisa_botao.clicked.connect(self.pesquisar)
+        barra_pesquisa_layout.addStretch()
         barra_pesquisa_layout.addWidget(self.pesquisa_input)
         barra_pesquisa_layout.addWidget(pesquisa_botao)
+        barra_pesquisa_layout.addStretch()
 
         # anuncios
         anuncios_grid = GridAnuncios(paginas=self.paginas, tipo_usuario=TipoCliente.COMPRADOR, cliente=self.cliente)
 
-        # Torna a grid scrollável
+        # grid scrollavel
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(anuncios_grid)
 
         # centro da pagina
         centro_layout.addLayout(barra_pesquisa_layout)
-        centro_layout.addWidget(scroll_area)  # Adicione o scroll_area, não o anuncios_grid diretamente
+        centro_layout.addWidget(scroll_area) 
         
         # adiciona os widgets ao layout da pagina
         main_layout.addWidget(menu)
@@ -63,3 +66,9 @@ class PaginaInicial(QWidget):
 
         # define o layout principal para o widget
         self.setLayout(main_layout)
+
+    def pesquisar(self):
+        print("pesquisar")
+        self.paginas.widget(self.paginas.PAGINA_PESQUISA).anuncios_grid.realizaPesquisa("normal", self.pesquisa_input.text())
+        self.paginas.widget(self.paginas.PAGINA_PESQUISA).resultado_label.setText(f"Resultados para \"{self.pesquisa_input.text()}\":")
+        self.paginas.setCurrentIndex(self.paginas.PAGINA_PESQUISA)
