@@ -3,11 +3,10 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 from Produto import Produto
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget
 from PyQt6.QtCore import Qt
-from ControladoraCliente import *
 from Produto import Produto
 from Anuncio import Anuncio
 

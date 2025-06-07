@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit
 from PyQt6.QtCore import Qt
 from paginas.GridAnunciosVendedor import *
 from paginas.MenuOpcoes import *
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 from Produto import Produto
 from TipoCliente import TipoCliente
 

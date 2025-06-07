@@ -8,7 +8,7 @@ from PyQt6.QtCore import Qt
 from paginas.GridAnuncios import *
 from paginas.MenuOpcoes import *
 from paginas.ProdutosCarrinho import *
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 
 class PaginaCarrinho(QWidget):
     def __init__(self, paginas: QStackedWidget, cliente: ControladoraCliente):

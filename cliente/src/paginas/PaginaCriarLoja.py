@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
 from PyQt6.QtCore import Qt
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 
 class PaginaCriarLoja(QWidget):
     def __init__(self, paginas: QStackedWidget, cliente: ControladoraCliente):
@@ -108,5 +108,5 @@ class PaginaCriarLoja(QWidget):
         if sucesso:
             self.status_label.setText("Login realizado com sucesso!")
             if self.cliente.usuario.idLoja is not None:
-                self.cliente.recuperaLoja(self.cliente.usuario.idLoja, self.cliente.usuario.idUser)
+                self.cliente.recuperaLoja(self.cliente.usuario.idLoja)
         

@@ -6,7 +6,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QIcon
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
+from Categoria import Categoria
 from paginas.PaginaAnuncio import PaginaAnuncio
 from Status import Status
 from Produto import Produto
