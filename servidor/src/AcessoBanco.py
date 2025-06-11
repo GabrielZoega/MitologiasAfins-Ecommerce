@@ -19,19 +19,24 @@ class AcessoBanco:
     def cadastrarUsuario(self, nome: str, email: str, senha: str, idCarrinho: int):
         con = sqlite3.connect('../../database/maSql.db')
         cur = con.cursor()
+        try:
+            print(f"Nome: {nome}, Email: {email}, Senha: {senha}, idCarrinho: {idCarrinho}")
+            cur.execute("""
+                INSERT INTO usuario (nomeUsuario, email, senha, FK_carrinho, tipoUsuario)
+                VALUES (?, ?, ?, ?, ?)
+            """, (nome, email, senha, idCarrinho, 'COMPRADOR'))
+            
+            cur.execute("SELECT idUsuario FROM usuario WHERE nomeUsuario = ?", (nome,))
+            fetch = cur.fetchone()
+                
+            con.commit()
+            con.close()
+            return fetch[0]
         
-        print(f"Nome: {nome}, Email: {email}, Senha: {senha}, idCarrinho: {idCarrinho}")
-        cur.execute("""
-            INSERT INTO usuario (nomeUsuario, email, senha, FK_carrinho, tipoUsuario)
-            VALUES (?, ?, ?, ?, ?)
-        """, (nome, email, senha, idCarrinho, 'COMPRADOR'))
-        
-        cur.execute("SELECT idUsuario FROM usuario WHERE nomeUsuario = ?", (nome,))
-        fetch = cur.fetchone()
-              
-        con.commit()
-        con.close()
-        return fetch[0]
+        except Exception as e:
+            con.commit()
+            con.close()
+            raise e
 
     def recuperaLogin(self, email: str):
         con = sqlite3.connect('../../database/maSql.db')
@@ -114,22 +119,28 @@ class AcessoBanco:
     def criarLoja(self, nome: str, endereco: str, descricao: str, idUsuario: int):
         con = sqlite3.connect('../../database/maSql.db')
         cur = con.cursor()
-        
-        cur.execute("""
-            INSERT INTO loja (nomeLoja, endereco, descricaoLoja)
-            VALUES (?, ?, ?)
-        """, (nome, endereco, descricao))
-        
-        cur.execute("SELECT idLoja FROM loja WHERE nomeLoja = ?", (nome,))
-        result = cur.fetchone()
-        idLoja = result[0]
+        try:
+            cur.execute("""
+                INSERT INTO loja (nomeLoja, endereco, descricaoLoja)
+                VALUES (?, ?, ?)
+            """, (nome, endereco, descricao))
+            
+            cur.execute("SELECT idLoja FROM loja WHERE nomeLoja = ?", (nome,))
+            result = cur.fetchone()
+            idLoja = result[0]
 
-        cur.execute("UPDATE usuario SET FK_lojaUser = ? WHERE idUsuario = ?", (idLoja, idUsuario))
-        cur.execute("UPDATE usuario SET tipoUsuario = ? WHERE idUsuario = ?", ('VENDEDOR', idUsuario))
+            cur.execute("UPDATE usuario SET FK_lojaUser = ? WHERE idUsuario = ?", (idLoja, idUsuario))
+            cur.execute("UPDATE usuario SET tipoUsuario = ? WHERE idUsuario = ?", ('VENDEDOR', idUsuario))
+            
+            con.commit()
+            con.close()
+            return idLoja
         
-        con.commit()
-        con.close()
-        return idLoja
+        except Exception as e:
+            con.commit()
+            con.close()
+            raise e
+            
     
     # Altere o nome da loja
     def alterarNomeLoja(self, nome: str, idLoja: int):
@@ -256,33 +267,45 @@ class AcessoBanco:
         con = sqlite3.connect('../../database/maSql.db')
         cur = con.cursor()
         
-        cur.execute("""
-            INSERT INTO produto (nomeProduto, descricaoProduto, preco, estoque, FK_Loja)
-            VALUES (?, ?, ?, ?, ?)
-        """, (nome, descricao, preco, estoque, idLoja))
+        try:
+            cur.execute("""
+                INSERT INTO produto (nomeProduto, descricaoProduto, preco, estoque, FK_Loja)
+                VALUES (?, ?, ?, ?, ?)
+            """, (nome, descricao, preco, estoque, idLoja))
+            
+            cur.execute("SELECT idProduto FROM produto WHERE nomeProduto = ?", (nome,))
+            result = cur.fetchone()
+            idProduto = result[0]
+            
+            con.commit()
+            con.close()
+            return idProduto
         
-        cur.execute("SELECT idProduto FROM produto WHERE nomeProduto = ?", (nome,))
-        result = cur.fetchone()
-        idProduto = result[0]
-        
-        con.commit()
-        con.close()
-        return idProduto
+        except Exception as e:
+            con.commit()
+            con.close()
+            raise e
 
     # Cria um anuncio
     def criarAnuncio(self, categoria: Categoria, status: Status, idProduto: int, idLoja: int):
         con = sqlite3.connect('../../database/maSql.db')
         cur = con.cursor()
         
-        cur.execute("""
-            INSERT INTO anuncio (categoria, statusAnuncio, FK_idProduto, FK_idLoja)
-            VALUES (?, ?, ?, ?)
-        """, (categoria, Status(1).name, idProduto, idLoja))
+        try:
+            cur.execute("""
+                INSERT INTO anuncio (categoria, statusAnuncio, FK_idProduto, FK_idLoja)
+                VALUES (?, ?, ?, ?)
+            """, (categoria, Status(1).name, idProduto, idLoja))
+            
+            cur.execute("SELECT idAnuncio FROM anuncio WHERE FK_idProduto = ?", (idProduto,))
+            result = cur.fetchone()
+            idAnuncio = result[0]
+            
+            con.commit()
+            con.close()
+            return idAnuncio
         
-        cur.execute("SELECT idAnuncio FROM anuncio WHERE FK_idProduto = ?", (idProduto,))
-        result = cur.fetchone()
-        idAnuncio = result[0]
-        
-        con.commit()
-        con.close()
-        return idAnuncio
+        except Exception as e:
+            con.commit()
+            con.close()
+            raise e

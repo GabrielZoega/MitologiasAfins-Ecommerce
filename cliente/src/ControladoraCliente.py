@@ -17,7 +17,7 @@ class ControladoraCliente(QObject):
     produtos_recuperados = pyqtSignal(list)
     anuncios_user_recuperados = pyqtSignal(list)
     produtos_user_recuperados = pyqtSignal(list)
-    loja_criada = pyqtSignal(bool)
+    loja_criada = pyqtSignal(bool, str)
     loja_recuperada = pyqtSignal(str, str, str)
     nome_loja_alterado = pyqtSignal(str)
     endereco_loja_alterado = pyqtSignal(str)
@@ -45,29 +45,62 @@ class ControladoraCliente(QObject):
 
     # FUNÇÔES DE CRIAÇÃO
     def criarLoja(self, nomeLoja: str, descricaoLoja: str, endereco: str):
-        print("CriarLoja -> Cliente\n")
-        self.loja_criada.emit(True)
-        self.usuario.tipoCliente = TipoCliente.VENDEDOR
-        self.idLoja = self.servidor.criarLoja(nomeLoja, endereco, descricaoLoja, self.usuario.idUser)
+        try:
+            print("CriarLoja -> Cliente\n")
+            self.usuario.tipoCliente = TipoCliente.VENDEDOR
+            self.idLoja = self.servidor.criarLoja(nomeLoja, endereco, descricaoLoja, self.usuario.idUser)
+            self.loja_criada.emit(True)
+        except Exception as e:
+            print(f"Erro: {e}")
+            if "nomeLoja" in str(e):
+                self.loja_criada.emit(False, "Esse nome de loja já existe.")
+            elif "endereco" in str(e):
+                self.loja_criada.emit(False, "Esse endereco de loja já existe.")
+            else:
+                self.loja_criada.emit(False, "Erro ao criar a loja.")
         
     def criarAnuncio(self, categoria:Categoria, status:Status, idProduto:int):
-        print("CriarAnuncio -> Cliente\n")
-        self.anuncio_criado.emit("ok") #dps a gente como colocar erro
-        return self.servidor.criarAnuncio(categoria, status, self.idLoja, idProduto)
+        try:
+            print("CriarAnuncio -> Cliente\n")
+            self.anuncio_criado.emit("ok") #dps a gente como colocar erro
+            return self.servidor.criarAnuncio(categoria, status, self.idLoja, idProduto)
+        except Exception as e:
+            print(f"Erro: {e}")
+            if "FK_idProduto" in str(e):
+                self.anuncio_criado.emit("Esse produto já está associado a um anúncio.")
+            else:
+                self.anuncio_criado.emit("Erro ao criar anúncio.")
     
-    def criarProduto(self, nomeProduto:str, descricao:str, preco:float, estoque:int):     
-        print("CriarProduto -> Cliente\n")
-        idProduto = self.servidor.criarProduto(nomeProduto, descricao, preco, estoque, self.idLoja)
-        self.produto_criado.emit(idProduto)
+    def criarProduto(self, nomeProduto:str, descricao:str, preco:float, estoque:int):
+        try:
+            print("CriarProduto -> Cliente\n")
+            idProduto = self.servidor.criarProduto(nomeProduto, descricao, preco, estoque, self.idLoja)
+            self.produto_criado.emit(idProduto, "Sucesso ao criar o produto.")
+        except Exception as e:
+            print(f"Erro: {e}")
+            if "nomeProduto" in str(e):
+                self.produto_criado.emit("-1", "Esse nome de produto já existe.")
+            else:
+                self.produto_criado.emit("-1", "Erro ao criar o produto.")
+            
 
 
     # LOGIN E CADASTRO
     def cadastrarUsuario(self,nome:str,email:str,senha:str):
         print("CadastrarUsuario -> Cliente\n")
-        idUsuario, idCarrinho = self.servidor.cadastrarUsuario(nome, email, senha)
-        self.usuario.cadastrarUsuario(idUsuario, nome, email, senha, idCarrinho)
-        self.login_validado.emit(True, "Usuário Cadastrado com Sucesso!")
-        return idUsuario, idCarrinho
+        try:
+            idUsuario, idCarrinho = self.servidor.cadastrarUsuario(nome, email, senha)
+            self.usuario.cadastrarUsuario(idUsuario, nome, email, senha, idCarrinho)
+            self.login_validado.emit(True, "Usuário Cadastrado com Sucesso!")
+            return idUsuario, idCarrinho
+        except Exception as e:
+            print(f"Erro: {e}")
+            if "nomeUsuario" in str(e):
+                self.login_validado.emit(False, "Esse nome de usuário já existe.")
+            elif "email" in str(e):
+                self.login_validado.emit(False, "Esse email já foi usado.")
+            else:
+                self.login_validado.emit(False, "Erro ao cadastrar o usuário.")
      
     def fazerLogin(self, email: str, senha:str):
         print("FazerLogin -> Cliente\n")

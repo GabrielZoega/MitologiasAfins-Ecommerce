@@ -135,20 +135,24 @@ class PaginaCriarAnuncio(QWidget):
         
     def respostaCriarProduto(self, idProduto: str):
         
-        indice = self.categoria_input.currentIndex()
+        if idProduto != "-1":
+            indice = self.categoria_input.currentIndex()
 
-        categoria_nome = list(Categoria)[indice].name
-        self.cliente.criarAnuncio(
-            idProduto=idProduto,
-            categoria=categoria_nome,
-            status=Status.ATIVO if self.visibilidade_checkbox.isChecked() else Status.PAUSADO
-        )
-        self.cliente.recuperaProdutos()
+            categoria_nome = list(Categoria)[indice].name
+            self.cliente.criarAnuncio(
+                idProduto=idProduto,
+                categoria=categoria_nome,
+                status=Status.ATIVO if self.visibilidade_checkbox.isChecked() else Status.PAUSADO
+            )
+            self.cliente.recuperaProdutos()
+        else:
+            #TODO mensagem de erro
+            print("Produto já existe.")
 
     def respostaCriarAnuncio(self, sucesso: str):
         if sucesso == "ok":
             self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_ANUNCIOS)
         else:
-            print("Erro ao criar anúncio.")
+            print(sucesso)
 
         self.cliente.recuperaAnuncios()
