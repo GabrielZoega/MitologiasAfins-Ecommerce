@@ -132,14 +132,15 @@ class MainWindow(QMainWindow):
     def paginaEditarLoja(self):
         self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_LOJA)
 
-    def atualizaTipoUsuario(self):
-        print("Atualizando tipo de usuário...")
-        if self.cliente.usuario.tipoCliente == TipoCliente.VENDEDOR:
-            self.toolbar.removeAction(self.action_ir_pagina_criar_loja)
-            self.toolbar.addAction(self.action_ir_pagina_editar_loja)
-        else:
-            self.toolbar.removeAction(self.action_ir_pagina_editar_loja)
-            self.toolbar.addAction(self.action_ir_pagina_criar_loja)
+    def atualizaTipoUsuario(self, sucesso:bool):
+        if sucesso:
+            print("Atualizando tipo de usuário...")
+            if self.cliente.usuario.tipoCliente == TipoCliente.VENDEDOR:
+                self.toolbar.removeAction(self.action_ir_pagina_criar_loja)
+                self.toolbar.addAction(self.action_ir_pagina_editar_loja)
+            else:
+                self.toolbar.removeAction(self.action_ir_pagina_editar_loja)
+                self.toolbar.addAction(self.action_ir_pagina_criar_loja)
             
 
 
