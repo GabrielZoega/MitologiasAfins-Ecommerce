@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
         # botao para ir para a pagina de carrinho
         self.action_ir_pagina_carrinho = QAction("Carrinho")
         self.action_ir_pagina_carrinho.triggered.connect(self.paginaCarrinho)
-        # self.toolbar.addAction(self.action_ir_pagina_carrinho)
+        self.toolbar.addAction(self.action_ir_pagina_carrinho)
 
         # botao para ir para a pagina de criar ou editar loja
 
@@ -121,9 +121,11 @@ class MainWindow(QMainWindow):
         self.paginas.setCurrentIndex(self.paginas.PAGINA_LOGIN)
 
     def paginaInicial(self):
+        self.cliente.recuperaAnuncios()
         self.paginas.setCurrentIndex(self.paginas.PAGINA_INICIAL)
 
     def paginaCarrinho(self):
+        self.pagina_carrinho.criaPagina()
         self.paginas.setCurrentIndex(self.paginas.PAGINA_CARRINHO)
 
     def paginaCriarLoja(self):

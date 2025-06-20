@@ -179,11 +179,11 @@ class AcessoBanco:
         con.commit()
         con.close()
         
-    def alterarStatus(self, idAnuncio: int, status: Status):
+    def alterarStatus(self, idAnuncio: int, status: str):
         con = sqlite3.connect('../../database/maSql.db')
         cur = con.cursor()
         
-        cur.execute("UPDATE anuncio SET statusAnuncio = ? WHERE idAnuncio = ?", (status.name, idAnuncio))
+        cur.execute("UPDATE anuncio SET statusAnuncio = ? WHERE idAnuncio = ?", (status, idAnuncio))
         con.commit()
         con.close()
     

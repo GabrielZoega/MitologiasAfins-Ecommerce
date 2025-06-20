@@ -19,6 +19,14 @@ class PaginaCarrinho(QWidget):
         
 
     def criaPagina(self):
+        old_layout = self.layout()
+        if old_layout is not None:
+            while old_layout.count():
+                item = old_layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.setParent(None)
+                    
         # layout principal horizontal
         main_layout = QHBoxLayout()
 
@@ -33,7 +41,9 @@ class PaginaCarrinho(QWidget):
         carrinho_label = QLabel("Carrinho")
 
         # produtos no carrinho
-        lista_produtos = ProdutosCarrinho(paginas=self.paginas, cliente=self.cliente)
+        lista_produtos = None
+        if self.cliente.usuario.idUser is not None:
+            lista_produtos = ProdutosCarrinho(paginas=self.paginas, cliente=self.cliente, produtosCarrinho=self.cliente.recuperaItens(self.cliente.usuario.idCarrinho))
 
         # botao de fechar compra
         fechar_compra_botao = QPushButton("Fechar Compra")

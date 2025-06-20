@@ -39,9 +39,9 @@ class GridAnuncios(QWidget):
         self.cliente.recuperaAnuncios()
 
     def atualizaAnuncios(self):
-        if self.tipo_usuario == TipoCliente.COMPRADOR:
-            # print("\nAtualizando anuncios comprador\n")
-            self.cliente.recuperaProdutos()
+        # if self.tipo_usuario == TipoCliente.COMPRADOR:
+        #     # print("\nAtualizando anuncios comprador\n")
+        self.cliente.recuperaProdutos()
 
     def atualizaProdutos(self):
         # print("Atualizando produtos")

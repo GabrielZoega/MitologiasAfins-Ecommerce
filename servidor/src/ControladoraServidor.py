@@ -59,8 +59,8 @@ class ControladoraServidor:
         self.banco.alterarCategoria(idAnuncio, categoria)
         
     def alterarStatus(self, idAnuncio: int, status: Status):
-        print(f"Status: {status}")
-        self.banco.alterarStatus(idAnuncio, status)
+        print(f"Status: {Status(status).name}")
+        self.banco.alterarStatus(idAnuncio, Status(status).name)
         
     def alterarProduto(self, idAnuncio: int, idProduto: int):
         print(f"Produto: {idProduto}")
@@ -293,6 +293,7 @@ class ControladoraServidor:
         idsItem = []
         idsProduto = []
         quantidades = []
+        precos = []
         
         for item in itensBanco:
             idItem, fk_idCarrinho, fk_produto, quantidade = item
@@ -300,10 +301,16 @@ class ControladoraServidor:
             idsItem.append(idItem)
             idsProduto.append(fk_produto)
             quantidades.append(quantidade)
-
+            cur.execute("SELECT preco FROM produto WHERE idProduto = ?", (fk_produto,))
+            preco = cur.fetchone()
+            preco = preco[0]
+            preco = preco * quantidade
+            precos.append(preco)
+            
+            
         con.commit()
         con.close()
-        return qntItem, idsItem, idsProduto, quantidades
+        return qntItem, idsItem, idsProduto, quantidades, precos
     
 
 if __name__ == "__main__":

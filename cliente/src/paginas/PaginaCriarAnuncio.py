@@ -128,12 +128,9 @@ class PaginaCriarAnuncio(QWidget):
 
 
     def criaAnuncio(self):
-        self.cliente.criarProduto(nomeProduto=self.nome_input.text(), 
-                                  descricao=self.descricao_input.text(), 
-                                  preco=self.preco_input.value(), 
-                                  estoque=self.estoque_input.value())
+        self.cliente.criarProduto(nomeProduto=self.nome_input.text(), descricao=self.descricao_input.text(), preco=self.preco_input.value(),  estoque=self.estoque_input.value())
         
-    def respostaCriarProduto(self, idProduto: str):
+    def respostaCriarProduto(self, idProduto: str, mensagem: str):
         
         if idProduto != "-1":
             indice = self.categoria_input.currentIndex()
@@ -146,13 +143,12 @@ class PaginaCriarAnuncio(QWidget):
             )
             self.cliente.recuperaProdutos()
         else:
-            #TODO mensagem de erro
-            print("Produto já existe.")
+            print(f"Erro: {mensagem}")
 
     def respostaCriarAnuncio(self, sucesso: str):
         if sucesso == "ok":
-            self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_ANUNCIOS)
+            self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_LOJA)
         else:
             print(sucesso)
 
-        self.cliente.recuperaAnuncios()
+        self.cliente.recuperaAnunciosUser(self.cliente.usuario.idUser)

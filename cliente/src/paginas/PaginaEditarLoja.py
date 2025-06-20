@@ -144,8 +144,7 @@ class PaginaEditarLoja(QWidget):
         self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_ANUNCIOS)
 
     def excluirLoja(self):
-        self.cliente.excluirLoja(self.cliente.loja.idLoja)
-        self.cliente.usuario.idLoja = None
+        self.cliente.excluirLoja(self.cliente.idLoja)
 
     def respostaExclusaoLoja(self):
         self.paginas.setCurrentIndex(self.paginas.PAGINA_CRIAR_LOJA)

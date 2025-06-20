@@ -3,6 +3,7 @@ from Status import Status
 from Categoria import Categoria
 from Usuario import Usuario
 from TipoCliente import TipoCliente
+from Item import Item
 from Anuncio import Anuncio
 from Produto import Produto
 import Pyro5.api
@@ -12,26 +13,27 @@ import Pyro5.api
 
 class ControladoraCliente(QObject):
     
-    login_validado = pyqtSignal(bool, str)
+    anuncio_criado = pyqtSignal(str)
+    anuncio_excluido = pyqtSignal(str)
     anuncios_recuperados = pyqtSignal(list)
-    produtos_recuperados = pyqtSignal(list)
     anuncios_user_recuperados = pyqtSignal(list)
-    produtos_user_recuperados = pyqtSignal(list)
+    categoria_anuncio_alterada = pyqtSignal(str)
+    descricao_loja_alterada = pyqtSignal(str)
+    descricao_produto_alterada = pyqtSignal(str)
+    endereco_loja_alterado = pyqtSignal(str)
+    estoque_produto_alterado = pyqtSignal(int)
+    # itens_carrinho_recuperados = pyqtSignal(bool)
+    login_validado = pyqtSignal(bool, str)
     loja_criada = pyqtSignal(bool, str)
+    loja_excluida = pyqtSignal(str)
     loja_recuperada = pyqtSignal(str, str, str)
     nome_loja_alterado = pyqtSignal(str)
-    endereco_loja_alterado = pyqtSignal(str)
-    descricao_loja_alterada = pyqtSignal(str)
-    produto_criado = pyqtSignal(int)
-    anuncio_criado = pyqtSignal(str)
-    categoria_anuncio_alterada = pyqtSignal(str)
-    visibilidade_anuncio_alterada = pyqtSignal(str)
     nome_produto_alterado = pyqtSignal(str)
-    descricao_produto_alterada = pyqtSignal(str)
     preco_produto_alterado = pyqtSignal(float)
-    estoque_produto_alterado = pyqtSignal(int)
-    anuncio_excluido = pyqtSignal(str)
-    loja_excluida = pyqtSignal(str)
+    produto_criado = pyqtSignal(str, str)
+    produtos_recuperados = pyqtSignal(list)
+    produtos_user_recuperados = pyqtSignal(list)
+    visibilidade_anuncio_alterada = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -49,7 +51,7 @@ class ControladoraCliente(QObject):
             print("CriarLoja -> Cliente\n")
             self.usuario.tipoCliente = TipoCliente.VENDEDOR
             self.idLoja = self.servidor.criarLoja(nomeLoja, endereco, descricaoLoja, self.usuario.idUser)
-            self.loja_criada.emit(True)
+            self.loja_criada.emit(True, "A Loja foi criada com sucesso!")
         except Exception as e:
             print(f"Erro: {e}")
             if "nomeLoja" in str(e):
@@ -75,7 +77,7 @@ class ControladoraCliente(QObject):
         try:
             print("CriarProduto -> Cliente\n")
             idProduto = self.servidor.criarProduto(nomeProduto, descricao, preco, estoque, self.idLoja)
-            self.produto_criado.emit(idProduto, "Sucesso ao criar o produto.")
+            self.produto_criado.emit(str(idProduto), "Sucesso ao criar o produto.")
         except Exception as e:
             print(f"Erro: {e}")
             if "nomeProduto" in str(e):
@@ -102,6 +104,7 @@ class ControladoraCliente(QObject):
             else:
                 self.login_validado.emit(False, "Erro ao cadastrar o usuário.")
      
+     
     def fazerLogin(self, email: str, senha:str):
         print("FazerLogin -> Cliente\n")
         response = self.servidor.fazerLogin(email, senha)
@@ -122,7 +125,8 @@ class ControladoraCliente(QObject):
     def recuperaLoja(self, idLoja: int):
         print("RecuperaLoja -> Cliente\n")
         self.idLoja = idLoja
-        return self.servidor.recuperaLoja(idLoja)
+        nome, endereco, descricao = self.servidor.recuperaLoja(idLoja)
+        self.loja_recuperada.emit(nome, descricao, endereco)
     
     def recuperaProdutosUser(self, idLoja: int):
         print("RecuperaProdutosUser -> Cliente\n")
@@ -146,15 +150,6 @@ class ControladoraCliente(QObject):
             anuncios.append(anuncio)
                                 
         self.anuncios_user_recuperados.emit(anuncios)
-        
-    
-    def recuperaCarrinho(self, idUsuario: int):
-        print("RecuperaCarrinho -> Cliente\n")
-        return self.servidor.recuperaCarrinho(idUsuario)
-        
-    def recuperaItens(self, idCarrinho: int):
-        print("RecuperaItens -> Cliente\n")
-        return self.servidor.recuperaItens(idCarrinho)
     
     
     # FUNÇÕES DE EXCLUSÃO
@@ -162,6 +157,8 @@ class ControladoraCliente(QObject):
         print("ExcluirLoja -> Cliente\n")
         self.servidor.excluirLoja(idLoja)
         self.idLoja = None
+        self.usuario.idLoja = None
+        self.usuario.tipoCliente = TipoCliente.COMPRADOR
         self.loja_excluida.emit("Loja excluída com sucesso")
     
     def excluirAnuncio(self,idAnuncio:int):
@@ -241,6 +238,21 @@ class ControladoraCliente(QObject):
     def fecharCarrinho(self, idCarrinho):
         print("FecharCarrinho -> Cliente\n")    
         return self.servidor.fecharCarrinho(idCarrinho)
+    
+    def recuperaCarrinho(self, idUsuario: int):
+        print("RecuperaCarrinho -> Cliente\n")
+        return self.servidor.recuperaCarrinho(idUsuario)
+    
+    def recuperaItens(self, idCarrinho: int):
+        print("RecuperaItens -> Cliente\n")
+        itens = []
+        
+        qntItem, idsItem, idsProduto, quantidades, precos = self.servidor.recuperaItens(idCarrinho)
+        
+        for i in range(qntItem):
+            itens.append(Item(idsProduto[i], precos[i], idsItem[i], quantidades[i]))
+        
+        return itens
     
     
     # RECUPARAÇÃO DE INFORMAÇÕES DO BANCO
