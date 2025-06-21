@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 
 import sys
 import os
@@ -12,7 +12,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from PyQt6.QtWidgets import QWidget, QComboBox, QCheckBox, QVBoxLayout, QSpinBox, QDoubleSpinBox, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
 from PyQt6.QtCore import Qt
-from ControladoraCliente import *
 from Categoria import Categoria
 from Anuncio import Anuncio
 from Produto import Produto

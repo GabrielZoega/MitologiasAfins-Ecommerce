@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QStackedWidget
 from PyQt6.QtCore import Qt
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 
 class PaginaLogin(QWidget):
     def __init__(self, paginas: QStackedWidget, cliente: ControladoraCliente):
@@ -95,7 +95,7 @@ class PaginaLogin(QWidget):
             self.paginas.setCurrentIndex(self.paginas.PAGINA_INICIAL)
             if self.cliente.usuario.idLoja is not None:
                 print(f"Recuperando loja -> {self.cliente.usuario.idLoja}")
-                self.cliente.recuperaLoja(self.cliente.usuario.idLoja, self.cliente.usuario.idUser)
+                self.cliente.recuperaLoja(self.cliente.usuario.idLoja)
                 self.cliente.recuperaAnunciosUser(self.cliente.usuario.idLoja)
                 print("Recuperando produtos da loja 1")
                 self.cliente.recuperaProdutosUser(self.cliente.usuario.idLoja)

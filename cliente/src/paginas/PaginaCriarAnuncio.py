@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 
 import sys
 import os
@@ -12,7 +12,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from PyQt6.QtWidgets import QWidget, QComboBox, QCheckBox, QVBoxLayout, QSpinBox, QDoubleSpinBox, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
 from PyQt6.QtCore import Qt
-from ControladoraCliente import *
 from Status import Status
 from Categoria import Categoria
 
@@ -40,7 +39,7 @@ class PaginaCriarAnuncio(QWidget):
         form_layout = QVBoxLayout() 
 
         # titulo do formulario
-        titulo_label = QLabel("Crie seu anuncio:")
+        titulo_label = QLabel("Crie seu anúncio:")
         titulo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # categoria
@@ -129,27 +128,27 @@ class PaginaCriarAnuncio(QWidget):
 
 
     def criaAnuncio(self):
-        self.cliente.criarProduto(nomeProduto=self.nome_input.text(), 
-                                  descricao=self.descricao_input.text(), 
-                                  preco=self.preco_input.value(), 
-                                  estoque=self.estoque_input.value())
+        self.cliente.criarProduto(nomeProduto=self.nome_input.text(), descricao=self.descricao_input.text(), preco=self.preco_input.value(),  estoque=self.estoque_input.value())
         
-    def respostaCriarProduto(self, idProduto: str):
+    def respostaCriarProduto(self, idProduto: str, mensagem: str):
         
-        indice = self.categoria_input.currentIndex()
+        if idProduto != "-1":
+            indice = self.categoria_input.currentIndex()
 
-        categoria_nome = list(Categoria)[indice].name
-        self.cliente.criarAnuncio(
-            idProduto=idProduto,
-            categoria=categoria_nome,
-            status=Status.ATIVO if self.visibilidade_checkbox.isChecked() else Status.PAUSADO
-        )
-        self.cliente.recuperaProdutos()
+            categoria_nome = list(Categoria)[indice].name
+            self.cliente.criarAnuncio(
+                idProduto=idProduto,
+                categoria=categoria_nome,
+                status=Status.ATIVO if self.visibilidade_checkbox.isChecked() else Status.PAUSADO
+            )
+            self.cliente.recuperaProdutos()
+        else:
+            print(f"Erro: {mensagem}")
 
     def respostaCriarAnuncio(self, sucesso: str):
         if sucesso == "ok":
-            self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_ANUNCIOS)
+            self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_LOJA)
         else:
-            print("Erro ao criar anúncio.")
+            print(sucesso)
 
-        self.cliente.recuperaAnuncios()
+        self.cliente.recuperaAnunciosUser(self.cliente.usuario.idUser)

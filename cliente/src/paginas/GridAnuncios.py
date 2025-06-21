@@ -6,7 +6,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QIcon
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
+from Categoria import Categoria
 from paginas.PaginaAnuncio import PaginaAnuncio
 from Status import Status
 from Produto import Produto
@@ -38,9 +39,9 @@ class GridAnuncios(QWidget):
         self.cliente.recuperaAnuncios()
 
     def atualizaAnuncios(self):
-        if self.tipo_usuario == TipoCliente.COMPRADOR:
-            # print("\nAtualizando anuncios comprador\n")
-            self.cliente.recuperaProdutos()
+        # if self.tipo_usuario == TipoCliente.COMPRADOR:
+        #     # print("\nAtualizando anuncios comprador\n")
+        self.cliente.recuperaProdutos()
 
     def atualizaProdutos(self):
         # print("Atualizando produtos")
@@ -162,9 +163,10 @@ class WidgetAnuncio(QWidget):
         self.setStyleSheet("background: rgba(0, 0, 0, 0.1);")
 
     def abreAnuncio(self):
-
-        self.pagina_anuncio = PaginaAnuncio(paginas=self.paginas, cliente=self.cliente, pagina_anterior=self.paginas.currentIndex(), produto=self.produto, anuncio=self.anuncio)
-        self.paginas.addWidget(self.pagina_anuncio) 
+        if self.paginas.widget(self.paginas.PAGINA_ANUNCIO) is not None:
+            self.paginas.removeWidget(self.paginas.widget(self.paginas.PAGINA_ANUNCIO))
+        pagina_anuncio = PaginaAnuncio(paginas=self.paginas, cliente=self.cliente, pagina_anterior=self.paginas.currentIndex(), produto=self.produto, anuncio=self.anuncio)
+        self.paginas.addWidget(pagina_anuncio) 
         self.paginas.setCurrentIndex(self.paginas.PAGINA_ANUNCIO)
 
     

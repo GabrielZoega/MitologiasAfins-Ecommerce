@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
 from PyQt6.QtCore import Qt
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 
 class PaginaCriarLoja(QWidget):
     def __init__(self, paginas: QStackedWidget, cliente: ControladoraCliente):
@@ -96,17 +96,17 @@ class PaginaCriarLoja(QWidget):
     
         self.cliente.criarLoja(nome, descricao, endereco)
 
-    def respostaCriarLoja(self, resposta):
-        if resposta:
+    def respostaCriarLoja(self, sucesso: bool, resposta: str):
+        if sucesso:
             self.status_label.setText("Loja criada com sucesso!")
             self.cliente.fazerLogin(self.cliente.usuario.email, self.cliente.usuario.senha)
             self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_LOJA)
         else:
-            self.status_label.setText("Erro ao criar loja.")
+            self.status_label.setText(resposta)
 
     def respostaLogin(self, sucesso: bool, resposta: str):
         if sucesso:
             self.status_label.setText("Login realizado com sucesso!")
             if self.cliente.usuario.idLoja is not None:
-                self.cliente.recuperaLoja(self.cliente.usuario.idLoja, self.cliente.usuario.idUser)
+                self.cliente.recuperaLoja(self.cliente.usuario.idLoja)
         

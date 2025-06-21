@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
 from PyQt6.QtCore import Qt
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 
 class PaginaEditarLoja(QWidget):
     def __init__(self, paginas: QStackedWidget, cliente: ControladoraCliente):
@@ -114,11 +114,11 @@ class PaginaEditarLoja(QWidget):
             return
         
         if nome != "":
-            self.cliente.alterarNomeLoja(nome)
+            self.cliente.alterarNomeLoja(nome, self.cliente.idLoja)
         if descricao != "":
-            self.cliente.alterarDescricaoLoja(descricao)
+            self.cliente.alterarDescricaoLoja(descricao, self.cliente.idLoja)
         if endereco != "":
-            self.cliente.alterarEndereco(endereco)
+            self.cliente.alterarEndereco(endereco, self.cliente.idLoja)
 
     def respostaRecuperacaoLoja(self, nome: str, descricao: str, endereco: str):
         self.nome_input.setPlaceholderText(nome)
@@ -144,8 +144,7 @@ class PaginaEditarLoja(QWidget):
         self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_ANUNCIOS)
 
     def excluirLoja(self):
-        self.cliente.excluirLoja(self.cliente.loja.idLoja)
-        self.cliente.usuario.idLoja = None
+        self.cliente.excluirLoja(self.cliente.idLoja)
 
     def respostaExclusaoLoja(self):
         self.paginas.setCurrentIndex(self.paginas.PAGINA_CRIAR_LOJA)

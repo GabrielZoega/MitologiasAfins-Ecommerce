@@ -3,14 +3,13 @@ import sys
 from PyQt6.QtWidgets import QApplication
 from interface import MainWindow
 from ControladoraCliente import ControladoraCliente
-import threading
 
 
-app = QApplication(sys.argv)
-controladora_cliente = ControladoraCliente()
-controladora_cliente.estabeleceConexao()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    controladora_cliente = ControladoraCliente()
 
-window = MainWindow(cliente=controladora_cliente)
-window.show()
+    window = MainWindow(cliente=controladora_cliente)
+    window.show()
 
-app.exec()
+    app.exec()

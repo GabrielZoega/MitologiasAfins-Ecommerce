@@ -3,11 +3,10 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 from Produto import Produto
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget
 from PyQt6.QtCore import Qt
-from ControladoraCliente import *
 from Produto import Produto
 from Anuncio import Anuncio
 
@@ -74,6 +73,11 @@ class PaginaAnuncio(QWidget):
         descricao_layout.addWidget(descricao_label)
         produto_layout.addLayout(descricao_layout)
 
+        # status de adicionar ao carrinho
+        self.status_label = QLabel("")
+        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        produto_layout.addWidget(self.status_label)
+
         # adiciona os layouts ao layout principal
         main_layout.addLayout(barra_lateral)
         main_layout.addStretch()
@@ -89,4 +93,9 @@ class PaginaAnuncio(QWidget):
         self.paginas.removeWidget(self)
 
     def adicionarAoCarrinho(self):
-        return
+        if self.cliente.usuario.idUser is None:
+            self.status_label.setText("Você precisa estar logado.")
+            return
+        else:
+            self.status_label.setText("Produto está no carrinho.")
+            self.cliente.adicionarItem(self.cliente.usuario.idCarrinho, self.produto.idProduto, 1)

@@ -15,7 +15,6 @@ from paginas.PaginaAnuncio import *
 from paginas.PaginaEditarAnuncios import *
 from paginas.PaginaEditarAnuncio import *
 from paginas.PaginaPesquisa import *
-from paginas.PaginaAnuncio import *
 from paginas.PaginaCriarAnuncio import *
 
 from ControladoraCliente import ControladoraCliente
@@ -32,6 +31,7 @@ class MainWindow(QMainWindow):
         self.cliente.loja_recuperada.connect(self.atualizaTipoUsuario)
         self.cliente.loja_criada.connect(self.atualizaTipoUsuario)
         self.cliente.loja_excluida.connect(self.atualizaTipoUsuario)
+        self.cliente.itens_carrinho_alterados.connect(self.paginaCarrinho)
 
 
         self.setWindowTitle("Mitologias&Afins")
@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
         # botao para ir para a pagina de carrinho
         self.action_ir_pagina_carrinho = QAction("Carrinho")
         self.action_ir_pagina_carrinho.triggered.connect(self.paginaCarrinho)
-        # self.toolbar.addAction(self.action_ir_pagina_carrinho)
+        self.toolbar.addAction(self.action_ir_pagina_carrinho)
 
         # botao para ir para a pagina de criar ou editar loja
 
@@ -121,9 +121,11 @@ class MainWindow(QMainWindow):
         self.paginas.setCurrentIndex(self.paginas.PAGINA_LOGIN)
 
     def paginaInicial(self):
+        self.cliente.recuperaAnuncios()
         self.paginas.setCurrentIndex(self.paginas.PAGINA_INICIAL)
 
     def paginaCarrinho(self):
+        self.pagina_carrinho.criaPagina()
         self.paginas.setCurrentIndex(self.paginas.PAGINA_CARRINHO)
 
     def paginaCriarLoja(self):
@@ -132,14 +134,15 @@ class MainWindow(QMainWindow):
     def paginaEditarLoja(self):
         self.paginas.setCurrentIndex(self.paginas.PAGINA_EDITAR_LOJA)
 
-    def atualizaTipoUsuario(self):
-        print("Atualizando tipo de usuário...")
-        if self.cliente.usuario.tipoCliente == TipoCliente.VENDEDOR:
-            self.toolbar.removeAction(self.action_ir_pagina_criar_loja)
-            self.toolbar.addAction(self.action_ir_pagina_editar_loja)
-        else:
-            self.toolbar.removeAction(self.action_ir_pagina_editar_loja)
-            self.toolbar.addAction(self.action_ir_pagina_criar_loja)
+    def atualizaTipoUsuario(self, sucesso:bool):
+        if sucesso:
+            print("Atualizando tipo de usuário...")
+            if self.cliente.usuario.tipoCliente == TipoCliente.VENDEDOR:
+                self.toolbar.removeAction(self.action_ir_pagina_criar_loja)
+                self.toolbar.addAction(self.action_ir_pagina_editar_loja)
+            else:
+                self.toolbar.removeAction(self.action_ir_pagina_editar_loja)
+                self.toolbar.addAction(self.action_ir_pagina_criar_loja)
             
 
 

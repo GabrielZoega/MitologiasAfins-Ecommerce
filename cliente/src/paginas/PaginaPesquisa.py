@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QHBoxLayout, QLab
 from PyQt6.QtCore import Qt
 from paginas.GridAnuncios import *
 from paginas.MenuOpcoes import *
-from ControladoraCliente import *
+from ControladoraCliente import ControladoraCliente
 from TipoCliente import TipoCliente
 
 class PaginaPesquisa(QWidget):

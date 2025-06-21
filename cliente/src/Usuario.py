@@ -11,14 +11,13 @@ class Usuario():
         self.idLoja = None
         self.tipoCliente = TipoCliente.COMPRADOR
         
-    def cadastrarUsuario(self, idUser: int, nome:str, email:str, senha:str, idCarrinho:int, tipoCliente:TipoCliente):
-        print(f"\nCadastrando usuario: {nome} - {email} - {senha} - {idCarrinho} - {tipoCliente}\n")
+    def cadastrarUsuario(self, idUser: int, nome:str, email:str, senha:str, idCarrinho:int):
+        print(f"\nCadastrando usuario: {nome} - {email} - {senha} - {idCarrinho}\n")
         self.idUser = idUser
         self.nome = nome
         self.email = email
         self.senha = senha
         self.idCarrinho = idCarrinho
-        self.tipoCliente = tipoCliente
         
     def fazerLogin(self, idUsuario: int, nome: str, email: str, senha: str, idCarrinho: int, idLoja: int, tipoCliente: TipoCliente):
         self.idUser = idUsuario
@@ -27,5 +26,5 @@ class Usuario():
         self.senha = senha
         self.idCarrinho = idCarrinho
         self.idLoja = idLoja
-        self.tipoCliente = tipoCliente
+        self.tipoCliente = TipoCliente[tipoCliente]
     
