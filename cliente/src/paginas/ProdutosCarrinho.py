@@ -21,15 +21,17 @@ class ProdutosCarrinho(QWidget):
         main_layout = QVBoxLayout()
 
         for produto in self.produtosCarrinho:
-            main_layout.addWidget(ProdutoCarrinho(produto))
+            main_layout.addWidget(ProdutoCarrinho(paginas=self.paginas, cliente=self.cliente, produto=produto))
 
         self.setLayout(main_layout)
 
 
 class ProdutoCarrinho(QWidget):
-    def __init__(self, paginas: QStackedWidget):
+    def __init__(self, paginas: QStackedWidget, cliente: ControladoraCliente, produto):
         super().__init__()
         self.paginas = paginas
+        self.cliente = cliente
+        self.produto = produto
         self.criaProduto()
 
     
@@ -41,14 +43,14 @@ class ProdutoCarrinho(QWidget):
         # imagem = QIcon()
 
         # nome do produto
-        nome = QLabel()
+        nome = QLabel(self.cliente.getNomeProduto(self.produto.idProduto))
 
         # botao de diminuir a quantidade
         diminuir_botao = QPushButton("-")
         # diminuir_botao.clicked.connect()
 
         # quantidade
-        quantidade = QLabel()
+        quantidade = QLabel(str(self.produto.quantidadeCarrinho))
 
         # botao de aumentar a quantidade
         aumentar_botao = QPushButton("+")

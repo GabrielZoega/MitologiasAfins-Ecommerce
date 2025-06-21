@@ -225,11 +225,23 @@ class ControladoraCliente(QObject):
         self.servidor.alterarEstoque(idProduto, estoque)
         self.estoque_produto_alterado.emit(estoque)
     
+    def getNomeProduto(self, idProduto: int):
+        for produto in self.produtos:
+            if produto.idProduto == idProduto:
+                return produto.nome
+    
     
     # FUNÇÕES DO CARRINHO
     def adicionarItem(self,idCarrinho:int,idProduto:int,quantidade:int):
-        print("AdicionarItem -> Cliente\n")
-        return self.servidor.adicionarItem(idCarrinho, idProduto, quantidade)
+        try:
+            print("AdicionarItem -> Cliente\n")
+            return self.servidor.adicionarItem(idCarrinho, idProduto, quantidade)
+        
+        except Exception as e:
+            if "fk_produto" in str(e):
+                print("Esse produto já está no carrinho")
+            else:
+                print(f"Erro: {e}")
     
     def alterarQuantidade(self,idItem:int, quantidade:int):
         print("AlterarQuantidade -> Cliente\n") 

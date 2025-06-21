@@ -163,7 +163,7 @@ class WidgetAnuncio(QWidget):
         self.setStyleSheet("background: rgba(0, 0, 0, 0.1);")
 
     def abreAnuncio(self):
-
+        print("idProduto:", self.produto.idProduto)
         self.pagina_anuncio = PaginaAnuncio(paginas=self.paginas, cliente=self.cliente, pagina_anterior=self.paginas.currentIndex(), produto=self.produto, anuncio=self.anuncio)
         self.paginas.addWidget(self.pagina_anuncio) 
         self.paginas.setCurrentIndex(self.paginas.PAGINA_ANUNCIO)

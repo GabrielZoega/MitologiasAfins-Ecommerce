@@ -103,7 +103,6 @@ class ControladoraServidor:
     def adicionarItem(self, idCarrinho: int, idProduto: int, quantidade: int):
         con = sqlite3.connect('../../database/maSql.db')
         cur = con.cursor()
-        
         idItem = self.banco.adicionarItem(idCarrinho, idProduto, quantidade)
         cur.execute("SELECT preco FROM produto WHERE idProduto = ?", (idProduto,))
         result = cur.fetchone()
@@ -111,7 +110,7 @@ class ControladoraServidor:
         
         con.commit()
         con.close()
-        
+    
         return idItem, preco
     
     def alterarQuantidade(self, idItem: int, quantidade: int):

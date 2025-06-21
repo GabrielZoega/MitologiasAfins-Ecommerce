@@ -15,7 +15,6 @@ from paginas.PaginaAnuncio import *
 from paginas.PaginaEditarAnuncios import *
 from paginas.PaginaEditarAnuncio import *
 from paginas.PaginaPesquisa import *
-from paginas.PaginaAnuncio import *
 from paginas.PaginaCriarAnuncio import *
 
 from ControladoraCliente import ControladoraCliente

@@ -19,16 +19,16 @@ class PaginaCarrinho(QWidget):
         
 
     def criaPagina(self):
-        old_layout = self.layout()
-        if old_layout is not None:
-            while old_layout.count():
-                item = old_layout.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    widget.setParent(None)
-                    
-        # layout principal horizontal
-        main_layout = QHBoxLayout()
+        layout_antigo = self.layout()
+        if layout_antigo is not None:
+            self.resetar_layout(layout_antigo)
+            
+            # layout principal horizontal
+            main_layout = layout_antigo
+        else:
+            # layout principal horizontal
+            main_layout = QHBoxLayout()
+            self.setLayout(main_layout)
 
         # adiciona um espaço na esquerda para centralizar horizontalmente
         # main_layout.addStretch(1)
@@ -51,7 +51,8 @@ class PaginaCarrinho(QWidget):
 
         # centro da pagina
         centro_layout.addWidget(carrinho_label)
-        centro_layout.addWidget(lista_produtos)
+        if lista_produtos is not None:
+            centro_layout.addWidget(lista_produtos)
         centro_layout.addWidget(fechar_compra_botao)
         
         # adiciona os widgets ao layout da pagina
@@ -64,3 +65,10 @@ class PaginaCarrinho(QWidget):
         self.setLayout(main_layout)
 
 
+    def resetar_layout(self, layout):
+        while layout.count():
+            item = layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+            elif item.layout():
+                self.resetar_layout(item.layout())

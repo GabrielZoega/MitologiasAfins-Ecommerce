@@ -82,26 +82,32 @@ class AcessoBanco:
         con = sqlite3.connect('../../database/maSql.db')
         cur = con.cursor()
         
-        cur.execute("""
-            INSERT INTO item (FK_idCarrinho, FK_produto, quantidade)
-            VALUES (?, ?, ?)
-        """, (idCarrinho, idProduto, quantidade))
-        idItem = cur.lastrowid
+        try:
+            cur.execute("""
+                INSERT INTO item (FK_idCarrinho, FK_produto, quantidade)
+                VALUES (?, ?, ?)
+            """, (idCarrinho, idProduto, quantidade))
+            idItem = cur.lastrowid
+            
+            cur.execute("SELECT preco FROM produto WHERE idProduto = ?", (idProduto,))
+            preco = cur.fetchone()
+            preco = preco[0]
+            
+            cur.execute("SELECT total FROM carrinho WHERE idCarrinho = ?", (idCarrinho,))
+            total = cur.fetchone()
+            total = total[0]
+            
+            total += preco * quantidade
+            cur.execute("UPDATE carrinho SET total = ? WHERE idCarrinho = ?", (total, idCarrinho))
+            
+            con.commit()
+            con.close()
+            return idItem
         
-        cur.execute("SELECT preco FROM produto WHERE idProduto = ?", (idProduto,))
-        preco = cur.fetchone()
-        preco = preco[0]
-        
-        cur.execute("SELECT total FROM carrinho WHERE idCarrinho = ?", (idCarrinho,))
-        total = cur.fetchone()
-        total = total[0]
-        
-        total += preco * quantidade
-        cur.execute("UPDATE carrinho SET total = ? WHERE idCarrinho = ?", (total, idCarrinho))
-        
-        con.commit()
-        con.close()
-        return idItem
+        except Exception as e:
+            con.commit()
+            con.close()
+            raise e
 
     def alterarQuantidade(self, idItem: int, quantidade: int):
         con = sqlite3.connect('../../database/maSql.db')

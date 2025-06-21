@@ -93,6 +93,7 @@ class PaginaAnuncio(QWidget):
         self.paginas.removeWidget(self)
 
     def adicionarAoCarrinho(self):
+        print("Id do produto:", self.produto.idProduto)
         if self.cliente.usuario.idUser is None:
             self.status_label.setText("Você precisa estar logado.")
             return
