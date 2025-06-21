@@ -4,8 +4,8 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QStackedWidget, QGridLayout
-from PyQt6.QtCore import QSize
-from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import QSize, Qt  
+from PyQt6.QtGui import QAbstractFileIconProvider, QIcon 
 from ControladoraCliente import ControladoraCliente
 
 class ProdutosCarrinho(QWidget):
@@ -47,20 +47,26 @@ class ProdutoCarrinho(QWidget):
 
         # botao de diminuir a quantidade
         diminuir_botao = QPushButton("-")
-        # diminuir_botao.clicked.connect()
+        diminuir_botao.setMaximumSize(QSize(32, 32))
+        diminuir_botao.clicked.connect(self.diminuiQuantidade)
 
         # quantidade
         quantidade = QLabel(str(self.produto.quantidadeCarrinho))
+        quantidade.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        quantidade.setMaximumSize(QSize(50, 32))
 
         # botao de aumentar a quantidade
         aumentar_botao = QPushButton("+")
-        # aumentar_botao.clicked.connect()
+        aumentar_botao.setMaximumSize(QSize(32, 32))
+        aumentar_botao.clicked.connect(self.aumentaQuantidade)
 
         # botao de excluir do carrinho
         excluir_botao = QPushButton()
-        excluir_botao.setIcon(QIcon())
-        excluir_botao.setIconSize(QSize(32, 32))
-        # excluir_botao.clicked.connect()
+        excluir_botao.setIcon(QAbstractFileIconProvider().icon(QAbstractFileIconProvider.IconType.Trashcan))
+        excluir_botao.setIconSize(QSize(27, 27))
+        excluir_botao.setMaximumSize(QSize(32, 32))
+        excluir_botao.setStyleSheet("background-color: red;")
+        excluir_botao.clicked.connect(self.excluiProduto)
 
 
         # main_layout.addWidget(imagem)
@@ -71,3 +77,17 @@ class ProdutoCarrinho(QWidget):
         main_layout.addWidget(excluir_botao)
 
         self.setLayout(main_layout)
+    
+    def diminuiQuantidade(self):
+        if self.produto.quantidadeCarrinho > 0:
+            self.cliente.alterarQuantidade(self.produto.idItem, self.produto.quantidadeCarrinho - 1)
+            self.cliente.itens_carrinho_alterados.emit(True)
+
+    def aumentaQuantidade(self):
+        self.cliente.alterarQuantidade(self.produto.idItem, self.produto.quantidadeCarrinho + 1)
+        self.cliente.itens_carrinho_alterados.emit(True)
+
+    def excluiProduto(self):
+        self.cliente.alterarQuantidade(self.produto.idItem, 0)
+        self.cliente.itens_carrinho_alterados.emit(True)
+        return

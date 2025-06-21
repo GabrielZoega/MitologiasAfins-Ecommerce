@@ -4,6 +4,8 @@ from AcessoBanco import AcessoBanco
 import sqlite3
 import Pyro5.api
 
+caminhoBanco = 'database/maSql.db'
+
 # Iniciara o processamento da tarefa requerida pelo cliente
 @Pyro5.api.expose
 class ControladoraServidor:
@@ -101,26 +103,45 @@ class ControladoraServidor:
     
     # Funções de edição do carrinho
     def adicionarItem(self, idCarrinho: int, idProduto: int, quantidade: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
-        idItem = self.banco.adicionarItem(idCarrinho, idProduto, quantidade)
-        cur.execute("SELECT preco FROM produto WHERE idProduto = ?", (idProduto,))
-        result = cur.fetchone()
-        preco = result[0]
+
+        if self.verificaItem(idCarrinho, idProduto, cur):
+            idItem = self.banco.adicionarItem(idCarrinho, idProduto, quantidade)
+            cur.execute("SELECT preco FROM produto WHERE idProduto = ?", (idProduto,))
+            result = cur.fetchone()
+            preco = result[0]
+            
+            con.commit()
+            con.close()
         
-        con.commit()
-        con.close()
+            return idItem, preco
+        else:
+            return None, None
     
-        return idItem, preco
+    def verificaItem(self, idCarrinho: int, idProduto: int, cur):
+        cur.execute("SELECT FK_produto from item WHERE FK_idCarrinho = ?", (idCarrinho,))
+        idsProduto = cur.fetchall()
+        print(f"lista dos ids: {idsProduto}")
+        
+        for produto in idsProduto:
+            if produto[0] == idProduto:
+                return False
+        return True
+    
     
     def alterarQuantidade(self, idItem: int, quantidade: int):
         self.banco.alterarQuantidade(idItem, quantidade)
     
     def fecharCarrinho(self, idCarrinho: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        print(f"Fechando carrinho: {idCarrinho}")
+        print(f"Conectando ao banco de dados")
+        con = sqlite3.connect(caminhoBanco)
+        print(f"Conectado ao banco de dados")
         cur = con.cursor()
-        
+        print(f"Selecionando itens do carrinho")
         cur.execute("SELECT idItem, FK_produto, quantidade FROM item WHERE FK_idCarrinho = ?", (idCarrinho,))
+        print(f"Itens selecionados")
         itens = cur.fetchall()
 
         for item in itens:
@@ -130,24 +151,33 @@ class ControladoraServidor:
 
             if quantidade > estoque:
                 return 403
-
+            
+        con.commit()
+        con.close()
         for item in itens:
+            con = sqlite3.connect(caminhoBanco)
+            cur = con.cursor()
             idItem, idProduto, quantidade = item
             cur.execute("SELECT estoque FROM produto WHERE idProduto = ?", (idProduto,))
             estoque = cur.fetchone()[0]
             novoEstoque = estoque - quantidade
 
+            con.commit()
+            con.close()
             self.alterarEstoque(idProduto, novoEstoque)
+            
+            con = sqlite3.connect(caminhoBanco)
+            cur = con.cursor()
             cur.execute("DELETE FROM item WHERE idItem = ?", (idItem,))
-
-        con.commit()
-        con.close()
+            con.commit()
+            con.close()
+        
         return 200
         
     
 
     def recuperaAnuncios(self):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("SELECT * FROM anuncio")
@@ -174,7 +204,7 @@ class ControladoraServidor:
         return qntAnuncios, idsAnuncio, categorias, statusAnuncios, idsProduto, idsLoja
 
     def recuperaProdutos(self):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("SELECT * FROM produto")
@@ -209,7 +239,7 @@ class ControladoraServidor:
     
     
     def recuperaProdutosUser(self, idLoja: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("SELECT * FROM produto WHERE FK_Loja = ?", (idLoja,))
@@ -236,7 +266,7 @@ class ControladoraServidor:
         return qntProdutos, idsProduto, nomesProduto, descricoesProduto, precos, estoques, idLoja
     
     def recuperaAnunciosUser(self, idLoja: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("SELECT * FROM anuncio WHERE FK_idLoja = ?", (idLoja,))
@@ -260,7 +290,7 @@ class ControladoraServidor:
         return qntAnuncios, idsAnuncio, categorias, status, idsProduto
 
     def recuperaCarrinho(self, idUsuario):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("SELECT FK_carrinho FROM usuario WHERE idUsuario = ?", (idUsuario,))
@@ -281,7 +311,7 @@ class ControladoraServidor:
     
     
     def recuperaItens(self, idCarrinho):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         if idCarrinho is None:

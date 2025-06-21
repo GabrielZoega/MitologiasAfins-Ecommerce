@@ -39,7 +39,7 @@ class PaginaCriarAnuncio(QWidget):
         form_layout = QVBoxLayout() 
 
         # titulo do formulario
-        titulo_label = QLabel("Crie seu anuncio:")
+        titulo_label = QLabel("Crie seu anúncio:")
         titulo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # categoria

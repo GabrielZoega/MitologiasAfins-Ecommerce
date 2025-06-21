@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS carrinho(
 CREATE TABLE IF NOT EXISTS item(
     idItem INTEGER PRIMARY KEY AUTOINCREMENT,
     FK_idCarrinho INTEGER NOT NULL,
-    FK_produto INTEGER NOT NULL UNIQUE,
+    FK_produto INTEGER NOT NULL,
     quantidade INTEGER NOT NULL,
     FOREIGN KEY (FK_idCarrinho) REFERENCES carrinho (idCarrinho),
     FOREIGN KEY (FK_produto) REFERENCES produto (idProduto)

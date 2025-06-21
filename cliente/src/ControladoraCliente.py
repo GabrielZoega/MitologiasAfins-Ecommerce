@@ -22,7 +22,7 @@ class ControladoraCliente(QObject):
     descricao_produto_alterada = pyqtSignal(str)
     endereco_loja_alterado = pyqtSignal(str)
     estoque_produto_alterado = pyqtSignal(int)
-    # itens_carrinho_recuperados = pyqtSignal(bool)
+    itens_carrinho_alterados = pyqtSignal(bool)
     login_validado = pyqtSignal(bool, str)
     loja_criada = pyqtSignal(bool, str)
     loja_excluida = pyqtSignal(str)
@@ -93,6 +93,7 @@ class ControladoraCliente(QObject):
         try:
             idUsuario, idCarrinho = self.servidor.cadastrarUsuario(nome, email, senha)
             self.usuario.cadastrarUsuario(idUsuario, nome, email, senha, idCarrinho)
+            self.usuario.tipoCliente = TipoCliente.COMPRADOR
             self.login_validado.emit(True, "Usuário Cadastrado com Sucesso!")
             return idUsuario, idCarrinho
         except Exception as e:
@@ -233,15 +234,16 @@ class ControladoraCliente(QObject):
     
     # FUNÇÕES DO CARRINHO
     def adicionarItem(self,idCarrinho:int,idProduto:int,quantidade:int):
-        try:
-            print("AdicionarItem -> Cliente\n")
-            return self.servidor.adicionarItem(idCarrinho, idProduto, quantidade)
         
-        except Exception as e:
-            if "fk_produto" in str(e):
-                print("Esse produto já está no carrinho")
-            else:
-                print(f"Erro: {e}")
+        print("AdicionarItem -> Cliente\n")
+        idItem, preco = self.servidor.adicionarItem(idCarrinho, idProduto, quantidade)
+        
+        if idItem and preco:
+            print("Item adicionado!")
+        else:
+            print("Esse produto já está no carrinho")
+    
+
     
     def alterarQuantidade(self,idItem:int, quantidade:int):
         print("AlterarQuantidade -> Cliente\n") 

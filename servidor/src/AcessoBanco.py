@@ -2,22 +2,25 @@ import sqlite3
 from Categoria import Categoria
 from Status import Status
 
+caminhoBanco = 'database/maSql.db'
+caminhoSql = 'database/init.sql'
+
 class AcessoBanco:
     
     def __init__(self):
         self.iniciaBanco()
     
     def iniciaBanco(self):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         # Roda o arquivo init com as tabelas a serem criadas
-        with open('../../database/init.sql') as f:
+        with open(caminhoSql) as f:
             con.executescript(f.read())
         con.commit()
         con.close()
 
     
     def cadastrarUsuario(self, nome: str, email: str, senha: str, idCarrinho: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         try:
             print(f"Nome: {nome}, Email: {email}, Senha: {senha}, idCarrinho: {idCarrinho}")
@@ -39,7 +42,7 @@ class AcessoBanco:
             raise e
 
     def recuperaLogin(self, email: str):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("SELECT idUsuario, nomeUsuario ,email, senha, tipoUsuario, FK_lojaUser, FK_carrinho, tipoUsuario FROM usuario WHERE email = ?", (email,))
@@ -54,7 +57,7 @@ class AcessoBanco:
         return idUsuario, nome ,email, senha, tipoUsuario, FK_lojaUser, FK_carrinho, tipoUsuario
 
     def recuperaLoja(self, idLoja):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("SELECT nomeLoja, endereco, descricaoLoja FROM loja WHERE idLoja = ?", (idLoja,))
@@ -68,7 +71,7 @@ class AcessoBanco:
         return nomeLoja, endereco, descricaoLoja
 
     def criarCarrinho(self):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("INSERT INTO carrinho (total) VALUES (?)", (0,))
@@ -79,7 +82,7 @@ class AcessoBanco:
         return idCarrinho
 
     def adicionarItem(self, idCarrinho: int, idProduto: int, quantidade: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         try:
@@ -110,7 +113,7 @@ class AcessoBanco:
             raise e
 
     def alterarQuantidade(self, idItem: int, quantidade: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         if quantidade == 0:
@@ -123,7 +126,7 @@ class AcessoBanco:
     
     # Criar uma loja
     def criarLoja(self, nome: str, endereco: str, descricao: str, idUsuario: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         try:
             cur.execute("""
@@ -150,7 +153,7 @@ class AcessoBanco:
     
     # Altere o nome da loja
     def alterarNomeLoja(self, nome: str, idLoja: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE loja SET nomeLoja = ? WHERE idLoja = ?", (nome, idLoja))
@@ -159,7 +162,7 @@ class AcessoBanco:
         
     # Altere o endereco da loja
     def alterarEndereco(self, endereco: str, idLoja: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE loja SET endereco = ? WHERE idLoja = ?", (endereco, idLoja))
@@ -168,7 +171,7 @@ class AcessoBanco:
         
     # Altere a descricao da loja
     def alterarDescricaoLoja(self, descricao: str, idLoja: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE loja SET descricaoLoja = ? WHERE idLoja = ?", (descricao, idLoja))
@@ -178,7 +181,7 @@ class AcessoBanco:
     
     # Operações de Edição do Anuncio
     def alterarCategoria(self, idAnuncio: int, categoria: Categoria):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE anuncio SET categoria = ? WHERE idAnuncio = ?", (categoria.name, idAnuncio))
@@ -186,7 +189,7 @@ class AcessoBanco:
         con.close()
         
     def alterarStatus(self, idAnuncio: int, status: str):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE anuncio SET statusAnuncio = ? WHERE idAnuncio = ?", (status, idAnuncio))
@@ -194,7 +197,7 @@ class AcessoBanco:
         con.close()
     
     def alterarProduto(self, idAnuncio: int, idProduto: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE anuncio SET FK_idProduto = ? WHERE idAnuncio = ?", (idProduto, idAnuncio))
@@ -204,7 +207,7 @@ class AcessoBanco:
 
     # Operações de Edição do Produto
     def alterarNomeProduto(self, idProduto: int, nome: str):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE produto SET nomeProduto = ? WHERE idProduto = ?", (nome, idProduto))
@@ -212,7 +215,7 @@ class AcessoBanco:
         con.close()
             
     def alterarDescricaoProduto(self, idProduto: int, descricao: str):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE produto SET descricaoProduto = ? WHERE idProduto = ?", (descricao, idProduto))
@@ -221,7 +224,7 @@ class AcessoBanco:
         
                 
     def alterarPreco(self, idProduto: int, preco: float):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE produto SET preco = ? WHERE idProduto = ?", (preco, idProduto))
@@ -230,7 +233,7 @@ class AcessoBanco:
 
                 
     def alterarEstoque(self, idProduto: int, estoque: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE produto SET estoque = ? WHERE idProduto = ?", (estoque, idProduto))
@@ -240,7 +243,7 @@ class AcessoBanco:
     
     # Exclui a loja e todos os seus anuncios e produtos
     def excluirLoja(self, idLoja: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("UPDATE usuario SET FK_lojaUser = NULL WHERE FK_lojaUser = ?", (idLoja,))
@@ -252,7 +255,7 @@ class AcessoBanco:
     
     # Exclui o Anuncio
     def excluirAnuncio(self, idAnuncio: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("DELETE FROM anuncio WHERE idAnuncio = ?", (idAnuncio,))
@@ -261,7 +264,7 @@ class AcessoBanco:
     
     # Exclui o produto e seu respectivo anuncio
     def excluirProduto(self, idProduto: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         cur.execute("DELETE FROM produto WHERE idProduto = ?", (idProduto,))
@@ -270,7 +273,7 @@ class AcessoBanco:
 
     # Cria um produto
     def criarProduto(self, nome: str, descricao: str, preco: float, estoque: int, idLoja: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         try:
@@ -294,7 +297,7 @@ class AcessoBanco:
 
     # Cria um anuncio
     def criarAnuncio(self, categoria: Categoria, status: Status, idProduto: int, idLoja: int):
-        con = sqlite3.connect('../../database/maSql.db')
+        con = sqlite3.connect(caminhoBanco)
         cur = con.cursor()
         
         try:

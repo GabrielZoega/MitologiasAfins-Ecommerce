@@ -31,6 +31,7 @@ class MainWindow(QMainWindow):
         self.cliente.loja_recuperada.connect(self.atualizaTipoUsuario)
         self.cliente.loja_criada.connect(self.atualizaTipoUsuario)
         self.cliente.loja_excluida.connect(self.atualizaTipoUsuario)
+        self.cliente.itens_carrinho_alterados.connect(self.paginaCarrinho)
 
 
         self.setWindowTitle("Mitologias&Afins")
